@@ -27,7 +27,7 @@ export interface CanvasSceneDefinition {
 
 export interface CanvasRenderFrame {
   globalTimeMs: number;
-  sceneTimeMs: number;
+  pageTimeMs: number;
   width: number;
   height: number;
 }
@@ -84,7 +84,7 @@ export interface CanvasTransitionRenderer {
 export interface CanvasDebugState {
   activeSceneId: string | null;
   activeRuntimeKey: string | null;
-  runtimeSceneTimeMs: number;
+  pageTimeMs: number;
   transition: {
     running: boolean;
     fromRuntimeKey: string;

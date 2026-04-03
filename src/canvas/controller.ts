@@ -47,13 +47,13 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
   let visibleContext: CanvasRenderingContext2D | null = null;
   let compositorCanvas: HTMLCanvasElement | null = null;
   let currentGlobalTimeMs = performance.now();
+  let pageStartedAtMs = currentGlobalTimeMs;
 
   interface RuntimeInstance {
     key: string;
     scene: CanvasSceneDefinition;
     renderer: CanvasRenderer;
     canvas: HTMLCanvasElement;
-    startedAtMs: number;
     loaded: boolean;
     frame: CanvasRenderFrame;
   }
@@ -106,11 +106,10 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
       scene,
       renderer,
       canvas: runtimeCanvas,
-      startedAtMs: currentGlobalTimeMs,
       loaded: false,
       frame: {
         globalTimeMs: currentGlobalTimeMs,
-        sceneTimeMs: 0,
+        pageTimeMs: Math.max(0, currentGlobalTimeMs - pageStartedAtMs),
         width,
         height
       }
@@ -140,7 +139,7 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
   function updateRuntimeFrame(runtime: RuntimeInstance, now: number): void {
     runtime.frame = {
       globalTimeMs: now,
-      sceneTimeMs: Math.max(0, now - runtime.startedAtMs),
+      pageTimeMs: Math.max(0, now - pageStartedAtMs),
       width: runtime.canvas.width,
       height: runtime.canvas.height
     };
@@ -222,6 +221,8 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
   return {
     bind(nextCanvas) {
       canvas = nextCanvas;
+      pageStartedAtMs = performance.now();
+      currentGlobalTimeMs = pageStartedAtMs;
       visibleContext = canvas.getContext("2d", { willReadFrequently: true });
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
@@ -269,7 +270,7 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
       nextRuntime.renderer.resize(canvas.width, canvas.height);
       nextRuntime.renderer.render({
         globalTimeMs: currentGlobalTimeMs,
-        sceneTimeMs: Math.max(0, currentGlobalTimeMs - nextRuntime.startedAtMs),
+        pageTimeMs: Math.max(0, currentGlobalTimeMs - pageStartedAtMs),
         width: canvas.width,
         height: canvas.height
       });
@@ -337,7 +338,7 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
       return {
         activeSceneId: currentScene?.id ?? null,
         activeRuntimeKey,
-        runtimeSceneTimeMs: activeRuntime?.frame.sceneTimeMs ?? 0,
+        pageTimeMs: activeRuntime?.frame.pageTimeMs ?? Math.max(0, currentGlobalTimeMs - pageStartedAtMs),
         transition: transitionState
           ? {
               running: true,

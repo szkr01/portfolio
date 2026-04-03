@@ -42,7 +42,7 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
       context.drawImage(media, 0, 0, canvas.width, canvas.height);
     },
     resize() {
-      this.render({ globalTimeMs: 0, sceneTimeMs: 0, width: 0, height: 0 });
+      this.render({ globalTimeMs: 0, pageTimeMs: 0, width: 0, height: 0 });
     },
     dispose() {
       if (media instanceof HTMLVideoElement) {

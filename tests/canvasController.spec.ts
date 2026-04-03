@@ -68,10 +68,10 @@ describe("createCanvasController", () => {
     expect(transitionRenderer.render).not.toHaveBeenCalled();
     expect(controller.getDebugState().activeRuntimeKey).toBe("cloud");
     expect(controller.getDebugState().activeSceneId).toBe("complements");
-    expect(controller.getDebugState().runtimeSceneTimeMs).toBeGreaterThan(0);
+    expect(controller.getDebugState().pageTimeMs).toBeGreaterThan(0);
   });
 
-  it("starts a live transition and retains both runtimes until the transition completes", async () => {
+  it("starts a live transition, keeps page time advancing, and retains both runtimes until the transition completes", async () => {
     const cloudRenderer = createRenderer("shader");
     const altRenderer = createRenderer("shader");
     const transitionRenderer = {
@@ -127,8 +127,17 @@ describe("createCanvasController", () => {
     expect(animationCallback).not.toBeNull();
     (animationCallback as unknown as FrameRequestCallback)(2_300);
 
-    expect((cloudRenderer.render as ReturnType<typeof vi.fn>).mock.calls.length).toBeGreaterThan(0);
-    expect((altRenderer.render as ReturnType<typeof vi.fn>).mock.calls.length).toBeGreaterThan(0);
+    const cloudFrames = (cloudRenderer.render as ReturnType<typeof vi.fn>).mock.calls.map(
+      (call) => call[0] as CanvasRenderFrame
+    );
+    const altFrames = (altRenderer.render as ReturnType<typeof vi.fn>).mock.calls.map(
+      (call) => call[0] as CanvasRenderFrame
+    );
+
+    expect(cloudFrames.length).toBeGreaterThan(0);
+    expect(altFrames.length).toBeGreaterThan(0);
+    expect(cloudFrames[cloudFrames.length - 1]?.pageTimeMs).toBe(1_300);
+    expect(altFrames[altFrames.length - 1]?.pageTimeMs).toBe(1_300);
     expect(transitionRenderer.render).toHaveBeenCalled();
 
     (animationCallback as unknown as FrameRequestCallback)(2_800);
@@ -138,8 +147,9 @@ describe("createCanvasController", () => {
     expect(controller.getDebugState().activeRuntimeKey).toBe("ripple");
   });
 
-  it("passes monotonic scene time into renderers", async () => {
+  it("passes monotonic page time into renderers and does not reset across runtime changes", async () => {
     const shaderRenderer = createRenderer("shader");
+    const secondRenderer = createRenderer("shader");
     const transitionRenderer = {
       mount: vi.fn(),
       render: vi.fn(),
@@ -149,7 +159,10 @@ describe("createCanvasController", () => {
     };
     let animationCallback: FrameRequestCallback | null = null;
     const controller = createCanvasController({
-      rendererFactory: vi.fn(() => shaderRenderer),
+      rendererFactory: vi
+        .fn()
+        .mockImplementationOnce(() => shaderRenderer)
+        .mockImplementationOnce(() => secondRenderer),
       transitionRenderer,
       transitions: [{ id: "ripple-mix", fragmentShader: "void main() {}", durationMs: 600 }],
       requestFrame: vi.fn((cb: FrameRequestCallback) => {
@@ -166,18 +179,36 @@ describe("createCanvasController", () => {
         runtimeKey: "cloud",
         kind: "shader",
         source: { fragmentShader: "void mainImage(out vec4 c, in vec2 f){c=vec4(1.0);}" }
+      },
+      {
+        id: "reel",
+        runtimeKey: "flow",
+        kind: "shader",
+        transitionId: "ripple-mix",
+        source: { fragmentShader: "void mainImage(out vec4 c, in vec2 f){c=vec4(0.0);}" }
       }
     ]);
 
     await controller.activate("hero", "init");
     (animationCallback as unknown as FrameRequestCallback)(1_250);
-    (animationCallback as unknown as FrameRequestCallback)(1_500);
+    vi.mocked(performance.now).mockReturnValue(1_600);
+    await controller.activate("reel", "manual");
+    (animationCallback as unknown as FrameRequestCallback)(1_750);
 
-    const frames = (shaderRenderer.render as ReturnType<typeof vi.fn>).mock.calls.map(
+    const firstRuntimeFrames = (shaderRenderer.render as ReturnType<typeof vi.fn>).mock.calls.map(
+      (call) => call[0] as CanvasRenderFrame
+    );
+    const secondRuntimeFrames = (secondRenderer.render as ReturnType<typeof vi.fn>).mock.calls.map(
       (call) => call[0] as CanvasRenderFrame
     );
 
-    expect(frames[0].sceneTimeMs).toBeGreaterThanOrEqual(0);
-    expect(frames[frames.length - 1]?.sceneTimeMs).toBeGreaterThan(frames[0].sceneTimeMs);
+    expect(firstRuntimeFrames[0].pageTimeMs).toBeGreaterThanOrEqual(0);
+    expect(firstRuntimeFrames[firstRuntimeFrames.length - 1]?.pageTimeMs).toBeGreaterThan(
+      firstRuntimeFrames[0].pageTimeMs
+    );
+    expect(secondRuntimeFrames[0]?.pageTimeMs).toBe(600);
+    expect(secondRuntimeFrames[secondRuntimeFrames.length - 1]?.pageTimeMs).toBeGreaterThanOrEqual(
+      secondRuntimeFrames[0]?.pageTimeMs ?? 0
+    );
   });
 });

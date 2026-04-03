@@ -57,3 +57,19 @@
 - `npm test` passed, including the new scene contract that asserts the second article now uses the embedded `flow` shader.
 - `npm run build` passed and compiled the new fragment shader into the production bundle.
 - `npm run test:smoke` passed by navigating between article routes and asserting `cloud -> flow -> cloud` transitions in a real browser.
+
+## Current Plan
+- [x] Add failing controller coverage for page-based time continuity across runtime changes and transitions.
+- [x] Replace runtime-local scene time with a single page-start clock in the canvas controller.
+- [x] Rename frame/debug time fields to match the new page-based meaning and keep shader renderers on that contract.
+- [x] Verify with `npm test`, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Tighten controller expectations so time is sourced from page start, remains monotonic through route transitions, and never resets when the active runtime changes.
+- Green: Replaced per-runtime `startedAtMs` with a controller-level page clock and fed that through render frames, shader uniforms, and debug state.
+- Refactor: Renamed frame/debug time fields to `pageTimeMs` so the public meaning matches the implementation and future shader work does not inherit the old scene-local semantics.
+
+## Current Review
+- `npm test` passed with updated controller coverage for page-time continuity across runtime switches and live transitions.
+- `npm run build` passed after the frame/debug type rename and controller clock change.
+- `npm run test:smoke` passed, confirming route-driven canvas transitions still work in a real browser.

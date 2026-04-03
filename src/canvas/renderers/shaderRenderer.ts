@@ -123,7 +123,7 @@ export function createShaderRenderer(): CanvasRenderer {
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.useProgram(program);
       gl.uniform3f(resolutionUniform, canvas.width, canvas.height, 1);
-      gl.uniform1f(timeUniform, frame.sceneTimeMs / 1000);
+      gl.uniform1f(timeUniform, frame.pageTimeMs / 1000);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     },
     resize(width, height) {
