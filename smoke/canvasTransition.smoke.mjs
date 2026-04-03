@@ -81,6 +81,21 @@ export async function runCanvasTransitionSmoke() {
       throw new Error(`Expected final runtime to be flow, received ${JSON.stringify(completed)}`);
     }
 
+    await page.getByRole("link", { name: "Image Drift" }).click();
+    await page.waitForURL((url) => url.hash.includes("/articles/image-drift"));
+    await page.waitForFunction(() => {
+      const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
+      return Boolean(state?.transition?.running);
+    });
+    await page.waitForFunction(() => {
+      const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
+      return state?.activeRuntimeKey === "image-drift" && state?.transition === null;
+    });
+    const imageArticle = await getState();
+    if (!imageArticle || imageArticle.activeRuntimeKey !== "image-drift") {
+      throw new Error(`Expected image article runtime to be image-drift, received ${JSON.stringify(imageArticle)}`);
+    }
+
     await page.getByRole("link", { name: "Color Harmony" }).click();
     await page.waitForURL((url) => url.hash.includes("/articles/color-harmony"));
     await page.waitForFunction(() => {
@@ -95,7 +110,7 @@ export async function runCanvasTransitionSmoke() {
     await browser.close();
     stopServer();
 
-    return { ok: true, initial, transitioning, completed, roundTrip };
+    return { ok: true, initial, transitioning, completed, imageArticle, roundTrip };
   } catch (error) {
     stopServer();
     throw error;

@@ -12,4 +12,15 @@ describe("canvas scenes", () => {
       fragmentShader: expect.stringContaining("const float SPEED = 0.15;")
     });
   });
+
+  it("uses an image scene for the third article", () => {
+    const thirdScene = canvasScenes[2];
+
+    expect(thirdScene?.id).toBe("image-drift");
+    expect(thirdScene?.runtimeKey).toBe("image-drift");
+    expect(thirdScene?.kind).toBe("image");
+    expect(thirdScene?.source).toMatchObject({
+      src: expect.stringContaining("testImage")
+    });
+  });
 });

@@ -75,6 +75,26 @@ describe("App", () => {
     expect(activate).toHaveBeenCalledWith(articlePages[1].sceneId, "manual");
   });
 
+  it("navigates to the image article and activates its dedicated scene", async () => {
+    activate.mockReset();
+    const router = createTestRouter();
+    await router.push(`/articles/${articlePages[0].slug}`);
+    await router.isReady();
+
+    const wrapper = mount(App, {
+      global: {
+        plugins: [router]
+      }
+    });
+    await nextTick();
+
+    await router.push("/articles/image-drift");
+    await nextTick();
+
+    expect(wrapper.text()).toContain("Image Drift");
+    expect(activate).toHaveBeenCalledWith("image-drift", "manual");
+  });
+
   it("applies the active article pane ratio to the canvas and article panes", async () => {
     activate.mockReset();
     const router = createTestRouter();

@@ -1,4 +1,5 @@
 import { articlePages } from "../content/articlePages";
+import imageDriftAsset from "../content/assets/articles/image-drift/testImage.webp";
 import cloudFragmentShader from "../shaders/cloud.frag?raw";
 import flowFragmentShader from "../shaders/flow.frag?raw";
 import type { CanvasSceneDefinition } from "./types";
@@ -14,11 +15,21 @@ export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) =>
     };
   }
 
+  if (entry.sceneId === "motion-field") {
+    return {
+      id: entry.sceneId,
+      runtimeKey: "flow",
+      kind: "shader",
+      transitionId: "live-mix",
+      source: { fragmentShader: flowFragmentShader }
+    };
+  }
+
   return {
     id: entry.sceneId,
-    runtimeKey: "flow",
-    kind: "shader",
+    runtimeKey: "image-drift",
+    kind: "image",
     transitionId: "live-mix",
-    source: { fragmentShader: flowFragmentShader }
+    source: { src: imageDriftAsset }
   };
 });

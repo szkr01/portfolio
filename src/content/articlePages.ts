@@ -1,5 +1,6 @@
 import type { Component } from "vue";
 import ColorHarmonyArticlePage from "./articles/ColorHarmonyArticlePage.vue";
+import ImageDriftArticlePage from "./articles/ImageDriftArticlePage.vue";
 import MotionFieldArticlePage from "./articles/MotionFieldArticlePage.vue";
 
 export interface ArticlePageEntry {
@@ -32,6 +33,16 @@ export const articlePages: ArticlePageEntry[] = [
     paneRatio: {
       canvas: 1,
       article: 3
+    }
+  },
+  {
+    slug: "image-drift",
+    title: "Image Drift",
+    sceneId: "image-drift",
+    component: ImageDriftArticlePage,
+    paneRatio: {
+      canvas: 1,
+      article: 1
     }
   }
 ];

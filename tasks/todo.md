@@ -102,3 +102,19 @@
 ## Current Review
 - `npm test` passed with the new resize-redraw regression coverage and the existing app, controller, and smoke-contract suites.
 - `npm run build` passed after the controller redraw fix.
+
+## Current Plan
+- [x] Add failing tests for the new image article route, scene registry entry, and image renderer crop/pan behavior.
+- [x] Add a dedicated article asset folder and register a third article backed by an image canvas scene.
+- [x] Extend the image renderer to animate a square crop anchored to the left edge and preserve redraw behavior across resize.
+- [x] Verify with `npm test`, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Added failing coverage for a third `image-drift` article, image-scene registry wiring, and image renderer behavior around square short-edge cropping, looping pan targets, and resize redraw continuity.
+- Green: Added `Image Drift` as a third route-backed article, copied `documents/testImage.png` into a dedicated article asset folder, and mapped the new article to an `image` scene.
+- Refactor: Reworked the shared media renderer so image scenes keep internal motion state, render into the runtime canvas as a left-anchored square, and expose the rendered canvas for visible composition and transitions.
+
+## Current Review
+- `npm test` passed with the new image-article and media-renderer regression coverage alongside the existing app, controller, and registry suites.
+- `npm run build` passed and emitted the imported article image asset in the production bundle.
+- `npm run test:smoke` passed by navigating `cloud -> flow -> image-drift -> cloud` and confirming route-driven canvas transitions still complete in a real browser.
