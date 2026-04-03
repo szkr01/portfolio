@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #ffffff;
+  --surface: #f6f6f6;
+  --text: #111111;
+  --muted: #666666;
+  --accent: #3366ff;
+  --accent2: #ff9933;
+  --border: rgba(0, 0, 0, 0.12);
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.theme-bg {
+  background-color: var(--bg);
+}
+
+.theme-surface {
+  background-color: var(--surface);
+}
+
+.theme-text {
+  color: var(--text);
+}
+
+.theme-muted {
+  color: var(--muted);
+}
+
+.theme-accent {
+  color: var(--accent);
+}
+
+.theme-accent-bg {
+  background-color: var(--accent);
+}
+
+.theme-accent-2 {
+  color: var(--accent2);
+}
+
+.theme-accent-2-border {
+  border-color: var(--accent2);
+}
+
+.theme-border {
+  border-color: var(--border);
+}
+
+.color-transition {
+  transition:
+    background-color 0.1s ease,
+    color 0.1s ease,
+    border-color 0.1s ease;
+}
+
+.canvas-container {
+  cursor: grab;
+}
+
+.canvas-container:active {
+  cursor: grabbing;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
