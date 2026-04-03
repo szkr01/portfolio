@@ -1,7 +1,9 @@
 import { computed, onBeforeUnmount, onMounted, ref, type ComputedRef, type Ref } from "vue";
 import { createCanvasController } from "./controller";
 import { createRendererFactory } from "./renderers/factory";
+import { createTransitionRenderer } from "./renderers/transitionRenderer";
 import { canvasScenes } from "./scenes";
+import { canvasTransitions } from "./transitions";
 import type { ThemeTokens } from "./types";
 
 const defaultTheme: ThemeTokens = {
@@ -23,7 +25,10 @@ export function useCanvasController(): {
   const canvasRef = ref<HTMLCanvasElement | null>(null);
   const theme = ref<ThemeTokens>(defaultTheme);
   const controller = createCanvasController({
-    rendererFactory: createRendererFactory()
+    rendererFactory: createRendererFactory(),
+    transitionRenderer: createTransitionRenderer(),
+    transitions: canvasTransitions,
+    defaultTransitionId: "live-mix"
   });
 
   const cleanupThemeSubscription = controller.subscribeTheme((nextTheme) => {
@@ -41,12 +46,18 @@ export function useCanvasController(): {
     controller.bind(canvasRef.value);
     controller.registerScenes(canvasScenes);
     window.addEventListener("resize", handleResize);
+    Object.assign(window, {
+      __PORTFOLIO_CANVAS_DEBUG__: () => controller.getDebugState()
+    });
     await controller.activate("hero", "init");
   });
 
   onBeforeUnmount(() => {
     cleanupThemeSubscription();
     window.removeEventListener("resize", handleResize);
+    Object.assign(window, {
+      __PORTFOLIO_CANVAS_DEBUG__: undefined
+    });
     controller.dispose();
   });
 

@@ -19,8 +19,23 @@ export type CanvasSceneSource = ShaderSceneSource | ImageSceneSource | VideoScen
 
 export interface CanvasSceneDefinition {
   id: string;
+  runtimeKey: string;
   kind: CanvasSceneKind;
+  transitionId?: string;
   source: CanvasSceneSource;
+}
+
+export interface CanvasRenderFrame {
+  globalTimeMs: number;
+  sceneTimeMs: number;
+  width: number;
+  height: number;
+}
+
+export interface CanvasTransitionDefinition {
+  id: string;
+  fragmentShader: string;
+  durationMs: number;
 }
 
 export interface ThemeTokens {
@@ -37,7 +52,7 @@ export interface CanvasRenderer {
   kind: CanvasSceneKind;
   mount(canvas: HTMLCanvasElement): void;
   load(scene: CanvasSceneDefinition): Promise<void>;
-  render(now: number): void;
+  render(frame: CanvasRenderFrame): void;
   resize(width: number, height: number): void;
   dispose(): void;
   captureFrame():
@@ -49,3 +64,31 @@ export interface CanvasRenderer {
 }
 
 export type CanvasRendererFactory = (kind: CanvasSceneKind) => CanvasRenderer;
+
+export interface CanvasTransitionRenderFrame {
+  width: number;
+  height: number;
+  progress: number;
+  from: CanvasImageSource;
+  to: CanvasImageSource;
+}
+
+export interface CanvasTransitionRenderer {
+  mount(canvas: HTMLCanvasElement): void;
+  render(transition: CanvasTransitionDefinition, frame: CanvasTransitionRenderFrame): void;
+  resize(width: number, height: number): void;
+  dispose(): void;
+  getOutput(): HTMLCanvasElement | null;
+}
+
+export interface CanvasDebugState {
+  activeSceneId: string | null;
+  activeRuntimeKey: string | null;
+  runtimeSceneTimeMs: number;
+  transition: {
+    running: boolean;
+    fromRuntimeKey: string;
+    toRuntimeKey: string;
+    progress: number;
+  } | null;
+}

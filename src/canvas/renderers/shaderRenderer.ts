@@ -1,4 +1,4 @@
-import type { CanvasRenderer, CanvasSceneDefinition } from "../types";
+import type { CanvasRenderer, CanvasRenderFrame, CanvasSceneDefinition } from "../types";
 
 interface ShaderProgramState {
   gl: WebGLRenderingContext;
@@ -90,7 +90,6 @@ function createProgram(gl: WebGLRenderingContext, fragmentShader: string): Shade
 export function createShaderRenderer(): CanvasRenderer {
   let canvas: HTMLCanvasElement | null = null;
   let shaderState: ShaderProgramState | null = null;
-  let startTime = 0;
 
   return {
     kind: "shader",
@@ -115,9 +114,8 @@ export function createShaderRenderer(): CanvasRenderer {
       }
       gl.clearColor(0, 0, 0, 1);
       shaderState = createProgram(gl, (scene.source as { fragmentShader: string }).fragmentShader);
-      startTime = performance.now();
     },
-    render(now) {
+    render(frame: CanvasRenderFrame) {
       if (!canvas || !shaderState) {
         return;
       }
@@ -125,7 +123,7 @@ export function createShaderRenderer(): CanvasRenderer {
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.useProgram(program);
       gl.uniform3f(resolutionUniform, canvas.width, canvas.height, 1);
-      gl.uniform1f(timeUniform, (now - startTime) / 1000);
+      gl.uniform1f(timeUniform, frame.sceneTimeMs / 1000);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     },
     resize(width, height) {

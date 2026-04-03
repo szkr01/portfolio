@@ -1,4 +1,4 @@
-import type { CanvasRenderer, CanvasSceneDefinition } from "../types";
+import type { CanvasRenderer, CanvasRenderFrame, CanvasSceneDefinition } from "../types";
 
 export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
   let canvas: HTMLCanvasElement | null = null;
@@ -34,7 +34,7 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
       }
       await loadVideo(scene);
     },
-    render() {
+    render(_frame: CanvasRenderFrame) {
       if (!canvas || !context || !media) {
         return;
       }
@@ -42,7 +42,7 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
       context.drawImage(media, 0, 0, canvas.width, canvas.height);
     },
     resize() {
-      this.render(0);
+      this.render({ globalTimeMs: 0, sceneTimeMs: 0, width: 0, height: 0 });
     },
     dispose() {
       if (media instanceof HTMLVideoElement) {

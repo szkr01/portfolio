@@ -5,3 +5,13 @@ declare module "*.vue" {
   const component: DefineComponent<Record<string, never>, Record<string, never>, unknown>;
   export default component;
 }
+
+declare global {
+  interface Window {
+    __PORTFOLIO_CANVAS_DEBUG__?: () => import("./canvas/types").CanvasDebugState;
+  }
+}
+
+declare module "*.mjs" {
+  export const runCanvasTransitionSmoke: () => Promise<unknown>;
+}
