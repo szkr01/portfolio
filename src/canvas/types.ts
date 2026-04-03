@@ -1,5 +1,6 @@
 export type CanvasSceneKind = "shader" | "image" | "video";
 export type CanvasActivationSource = "init" | "scroll" | "manual";
+export type CanvasThemeMode = "light" | "dark";
 
 export interface ShaderSceneSource {
   fragmentShader: string;
@@ -21,6 +22,7 @@ export interface CanvasSceneDefinition {
   id: string;
   runtimeKey: string;
   kind: CanvasSceneKind;
+  themeMode?: CanvasThemeMode;
   transitionId?: string;
   source: CanvasSceneSource;
 }

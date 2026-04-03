@@ -10,6 +10,7 @@ export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) =>
       id: entry.sceneId,
       runtimeKey: "cloud",
       kind: "shader",
+      themeMode: entry.themeMode,
       transitionId: "live-mix",
       source: { fragmentShader: cloudFragmentShader }
     };
@@ -20,6 +21,7 @@ export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) =>
       id: entry.sceneId,
       runtimeKey: "flow",
       kind: "shader",
+      themeMode: entry.themeMode,
       transitionId: "live-mix",
       source: { fragmentShader: flowFragmentShader }
     };
@@ -29,6 +31,7 @@ export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) =>
     id: entry.sceneId,
     runtimeKey: "image-drift",
     kind: "image",
+    themeMode: entry.themeMode,
     transitionId: "live-mix",
     source: { src: imageDriftAsset }
   };

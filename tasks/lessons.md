@@ -6,3 +6,4 @@
 - コンテンツ構造や scene 切り替え単位は、実装都合で細かく分解しない。記事単位・ページ遷移単位など、ユーザーが指定した編集モデルを source of truth にする。
 - animation / shader の time は「何を起点に進むべきか」を先に固定する。runtime 単位の都合で clock semantics を決めず、ユーザーが指定した基準時間を controller と debug 名に反映する。
 - レイアウト変更で canvas の表示サイズを動かすときは、`ResizeObserver` を足すだけで終わらせず、`resize()` 後に可視 canvas が即再描画されるか確認する。`canvas.width` / `canvas.height` の更新は内容を消す前提で扱う。
+- ユーザーが「最小変更」と明示したら、既存ロジックの分岐点を直接上書きする案から先に検討する。設定層や新しい抽象化を足す前に、今ある判定値を強制できるか確認する。

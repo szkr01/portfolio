@@ -1,4 +1,4 @@
-import type { ThemeTokens } from "../types";
+import type { CanvasThemeMode, ThemeTokens } from "../types";
 import {
   fitChromaToGamut,
   getContrast,
@@ -49,6 +49,7 @@ function toThemeTokens(theme: ThemeState): ThemeTokens {
 
 export function createThemeSampler(size = 96): {
   sample(source: CanvasImageSource): ThemeTokens | null;
+  setThemeMode(mode: CanvasThemeMode | null): void;
   step(): ThemeTokens;
   current(): ThemeTokens;
 } {
@@ -58,16 +59,21 @@ export function createThemeSampler(size = 96): {
   const context = analysisCanvas.getContext("2d", { willReadFrequently: true });
   let currentTheme = cloneThemeState(defaultThemeOklab);
   let targetTheme = cloneThemeState(defaultThemeOklab);
+  let themeMode: CanvasThemeMode | null = null;
 
   if (!context) {
     return {
       sample: () => null,
+      setThemeMode: () => undefined,
       step: () => toThemeTokens(currentTheme),
       current: () => toThemeTokens(currentTheme)
     };
   }
 
   return {
+    setThemeMode(mode) {
+      themeMode = mode;
+    },
     sample(source) {
       context.clearRect(0, 0, size, size);
       context.drawImage(source, 0, 0, size, size);
@@ -108,7 +114,7 @@ export function createThemeSampler(size = 96): {
 
       let dominantHue = dominantIndex * 15 + 7.5;
       const averageLightness = totalLightness / bins.length;
-      const isDark = averageLightness < 0.45;
+      const isDark = themeMode === null ? averageLightness < 0.45 : themeMode === "dark";
       const bgL = isDark ? 0.16 : 0.97;
       const bgC = isDark ? 0.02 : 0.01;
       const bgH = dominantHue;

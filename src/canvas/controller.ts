@@ -267,6 +267,7 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
       if (!nextScene || !canvas) {
         return;
       }
+      themeSampler.setThemeMode(nextScene.themeMode ?? null);
       const previousScene = currentScene;
       if (previousScene?.id === nextScene.id) {
         return;

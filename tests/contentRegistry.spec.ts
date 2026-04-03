@@ -9,4 +9,12 @@ describe("content registry alignment", () => {
 
     expect(canvasSceneIds).toEqual(articleSceneIds);
   });
+
+  it("carries each article theme mode into the matching canvas scene", () => {
+    const sceneThemeModes = new Map(canvasScenes.map((entry) => [entry.id, entry.themeMode]));
+
+    for (const article of articlePages) {
+      expect(sceneThemeModes.get(article.sceneId)).toBe(article.themeMode);
+    }
+  });
 });

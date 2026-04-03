@@ -118,3 +118,18 @@
 - `npm test` passed with the new image-article and media-renderer regression coverage alongside the existing app, controller, and registry suites.
 - `npm run build` passed and emitted the imported article image asset in the production bundle.
 - `npm run test:smoke` passed by navigating `cloud -> flow -> image-drift -> cloud` and confirming route-driven canvas transitions still complete in a real browser.
+
+## Current Plan
+- [x] Add failing coverage for per-article forced light/dark selection, including `motion-field` using forced dark mode.
+- [x] Extend article metadata and canvas scene registration with a minimal forced theme flag.
+- [x] Make the canvas controller force the existing `isDark` branch per active article instead of introducing new theme calculation.
+- [x] Verify with `npm test` and `npm run build`.
+
+## Current TDD Log
+- Red: Added registry coverage for article-to-scene theme propagation and sampler coverage that forces the existing light/dark branch with identical sampled pixels.
+- Green: Added `themeMode` to article metadata and scene definitions, then set the active sampler mode from the controller before each scene activation.
+- Refactor: Kept the existing sampler math intact and changed only the `isDark` decision point so article selection can override the threshold branch directly.
+
+## Current Review
+- `npm test` passed with the new forced-theme regression coverage alongside the existing app, controller, and smoke-contract suites.
+- `npm run build` passed after the sampler/controller wiring change and emitted a production bundle successfully.
