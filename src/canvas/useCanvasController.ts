@@ -49,7 +49,6 @@ export function useCanvasController(): {
     Object.assign(window, {
       __PORTFOLIO_CANVAS_DEBUG__: () => controller.getDebugState()
     });
-    await controller.activate("hero", "init");
   });
 
   onBeforeUnmount(() => {

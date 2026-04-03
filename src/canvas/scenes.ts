@@ -1,25 +1,24 @@
-import { articleSectionDefinitions } from "../content/articleSectionDefinitions";
+import { articlePages } from "../content/articlePages";
 import cloudFragmentShader from "../shaders/cloud.frag?raw";
-import rippleFragmentShader from "../shaders/ripple.frag?raw";
+import flowFragmentShader from "../shaders/flow.frag?raw";
 import type { CanvasSceneDefinition } from "./types";
 
-const sharedCloudSceneIds = new Set(["hero", "complements", "contrast"]);
-
-export const canvasScenes: CanvasSceneDefinition[] = articleSectionDefinitions.map((entry) => {
-  if (sharedCloudSceneIds.has(entry.sceneId)) {
+export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) => {
+  if (entry.sceneId === "color-harmony") {
     return {
       id: entry.sceneId,
       runtimeKey: "cloud",
       kind: "shader",
+      transitionId: "live-mix",
       source: { fragmentShader: cloudFragmentShader }
     };
   }
 
   return {
     id: entry.sceneId,
-    runtimeKey: "ripple",
+    runtimeKey: "flow",
     kind: "shader",
     transitionId: "live-mix",
-    source: { fragmentShader: rippleFragmentShader }
+    source: { fragmentShader: flowFragmentShader }
   };
 });

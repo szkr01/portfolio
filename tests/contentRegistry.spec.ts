@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { canvasScenes } from "../src/canvas/scenes";
-import { articleSectionDefinitions } from "../src/content/articleSectionDefinitions";
+import { articlePages } from "../src/content/articlePages";
 
 describe("content registry alignment", () => {
-  it("keeps article sections and canvas scenes aligned by scene id", () => {
-    const sectionSceneIds = articleSectionDefinitions.map((entry) => entry.sceneId);
+  it("keeps article pages and canvas scenes aligned by scene id", () => {
+    const articleSceneIds = articlePages.map((entry) => entry.sceneId);
     const canvasSceneIds = canvasScenes.map((entry) => entry.id);
 
-    expect(canvasSceneIds).toEqual(sectionSceneIds);
+    expect(canvasSceneIds).toEqual(articleSceneIds);
   });
 });

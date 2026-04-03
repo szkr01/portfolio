@@ -11,12 +11,13 @@
     "test:smoke": "node smoke/canvasTransition.smoke.mjs"
   },
   "dependencies": {
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4.1.3",
     "@vitejs/plugin-vue": "^5.2.3",
-    "@playwright/test": "^1.52.0",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.21",
     "jsdom": "^26.0.0",

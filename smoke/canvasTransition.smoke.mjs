@@ -50,6 +50,7 @@ export async function runCanvasTransitionSmoke() {
 
     await page.goto(`http://${host}:${port}`, { waitUntil: "networkidle" });
     await page.waitForFunction(() => typeof window.__PORTFOLIO_CANVAS_DEBUG__ === "function");
+    await page.waitForSelector("[data-article-link]");
 
     const getState = () =>
       page.evaluate(() => window.__PORTFOLIO_CANVAS_DEBUG__ ? window.__PORTFOLIO_CANVAS_DEBUG__() : null);
@@ -59,17 +60,8 @@ export async function runCanvasTransitionSmoke() {
       throw new Error(`Expected initial runtime to be cloud, received ${JSON.stringify(initial)}`);
     }
 
-    await page.locator("[data-scene-id='complements']").scrollIntoViewIfNeeded();
-    await page.waitForTimeout(250);
-    const sameRuntime = await getState();
-    if (!sameRuntime || sameRuntime.activeRuntimeKey !== "cloud") {
-      throw new Error(`Expected shared runtime to remain cloud, received ${JSON.stringify(sameRuntime)}`);
-    }
-    if (!(sameRuntime.runtimeSceneTimeMs > initial.runtimeSceneTimeMs)) {
-      throw new Error("Expected shared-runtime scene time to continue increasing across sections");
-    }
-
-    await page.locator("[data-scene-id='mechanics']").scrollIntoViewIfNeeded();
+    await page.getByRole("link", { name: "Motion Field" }).click();
+    await page.waitForURL((url) => url.hash.includes("/articles/motion-field"));
     await page.waitForFunction(() => {
       const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
       return Boolean(state?.transition?.running);
@@ -82,17 +74,28 @@ export async function runCanvasTransitionSmoke() {
 
     await page.waitForFunction(() => {
       const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
-      return state?.activeRuntimeKey === "ripple" && state?.transition === null;
+      return state?.activeRuntimeKey === "flow" && state?.transition === null;
     });
     const completed = await getState();
-    if (!completed || completed.activeRuntimeKey !== "ripple") {
-      throw new Error(`Expected final runtime to be ripple, received ${JSON.stringify(completed)}`);
+    if (!completed || completed.activeRuntimeKey !== "flow") {
+      throw new Error(`Expected final runtime to be flow, received ${JSON.stringify(completed)}`);
+    }
+
+    await page.getByRole("link", { name: "Color Harmony" }).click();
+    await page.waitForURL((url) => url.hash.includes("/articles/color-harmony"));
+    await page.waitForFunction(() => {
+      const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
+      return state?.activeRuntimeKey === "cloud" && state?.transition === null;
+    });
+    const roundTrip = await getState();
+    if (!roundTrip || roundTrip.activeRuntimeKey !== "cloud") {
+      throw new Error(`Expected round-trip runtime to be cloud, received ${JSON.stringify(roundTrip)}`);
     }
 
     await browser.close();
     stopServer();
 
-    return { ok: true, initial, sameRuntime, transitioning, completed };
+    return { ok: true, initial, transitioning, completed, roundTrip };
   } catch (error) {
     stopServer();
     throw error;

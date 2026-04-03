@@ -1,13 +1,31 @@
 <script setup lang="ts">
+import { computed, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
 import ArticlePane from "./components/ArticlePane.vue";
 import CanvasPane from "./components/CanvasPane.vue";
 import { useCanvasController } from "./canvas/useCanvasController";
-import { useSectionSceneActivation } from "./composables/useSectionSceneActivation";
+import type { ArticlePageEntry } from "./content/articlePages";
 
 const { setCanvas, themeStyle, activate } = useCanvasController();
-const { registerSection } = useSectionSceneActivation({
-  activate: (sceneId) => activate(sceneId, "scroll")
+const route = useRoute();
+const currentArticle = computed(() => route.meta.article as ArticlePageEntry | undefined);
+
+onMounted(async () => {
+  if (currentArticle.value) {
+    await activate(currentArticle.value.sceneId, "init");
+  }
 });
+
+watch(
+  () => route.fullPath,
+  async (_nextPath, previousPath) => {
+    if (!previousPath || !currentArticle.value) {
+      return;
+    }
+
+    await activate(currentArticle.value.sceneId, "manual");
+  }
+);
 </script>
 
 <template>
@@ -16,6 +34,6 @@ const { registerSection } = useSectionSceneActivation({
     :style="themeStyle"
   >
     <CanvasPane :set-canvas="setCanvas" />
-    <ArticlePane :register-section="registerSection" />
+    <ArticlePane />
   </main>
 </template>

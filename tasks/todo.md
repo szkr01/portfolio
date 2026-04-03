@@ -26,18 +26,34 @@
 - Runtime behavior: same-runtime section crossings keep `iTime` advancing, while cross-runtime section changes run a shader-based live compositor instead of resetting abruptly.
 
 ## Current Plan
-- [x] Add failing tests for registry-driven article rendering, scene-id auto wiring, and primitive component contracts.
-- [x] Extract article layout primitives that encapsulate the current Tailwind styling without changing visuals.
-- [x] Split the current article content into section components and render them through a single registry in `ArticlePane`.
-- [x] Align scene/shader registration with the section registry and move shader assets out of `documents/`.
+- [x] Add failing tests for route-driven article rendering, article-to-scene activation, and registry alignment.
+- [x] Introduce client-side routing for article pages with hash-based history suitable for GitHub Pages.
+- [x] Collapse the current article into a single page component and add a second article page plus top-of-pane article navigation.
+- [x] Remove section-driven shader activation and register canvas scenes from article-page metadata instead.
 - [x] Verify with `npm test`, `npm run build`, and `npm run test:smoke`.
 
 ## Current TDD Log
-- Red: Added failing tests for the new article wrapper and primitive contracts, plus a registry-alignment test to lock section/scene wiring before refactoring.
-- Green: Implemented article primitives, split each article section into its own Vue component, rendered them through a registry-driven `ArticlePane`, and moved the cloud shader into `src/shaders`.
-- Refactor: Centralized section metadata in `articleSectionDefinitions`, so article rendering and canvas scene registration share the same ordered source of truth.
+- Red: Replaced the section-based app and registry tests with route-based expectations for article navigation, route-driven scene activation, and page/scene registry alignment.
+- Green: Added `vue-router` hash routing, introduced single-file article pages plus a second article, and rewired canvas activation to follow route changes only.
+- Refactor: Deleted section-scene activation plumbing and replaced it with an article-page registry that feeds both routing and shader registration.
 
 ## Current Review
-- `npm test` passed with the new article primitive tests, scene wrapper test, and section/scene registry alignment coverage.
-- `npm run build` passed after the article refactor and shader relocation.
-- `npm run test:smoke` passed in a real browser, confirming the existing scroll-driven canvas runtime behavior remained intact.
+- `npm test` passed with updated route-driven app coverage and the existing canvas controller checks.
+- `npm run build` passed with `vue-router` and the new article-page registry in place.
+- `npm run test:smoke` passed by navigating between article links and asserting `cloud -> ripple -> cloud` canvas transitions.
+
+## Current Plan
+- [x] Add failing coverage for the second article using a dedicated `flow` shader runtime instead of `ripple`.
+- [x] Add a new embedded-parameter fragment shader adapted to the repo's `mainImage` contract.
+- [x] Swap the second article scene from `ripple` to `flow` without changing the route-driven activation model.
+- [x] Verify with `npm test`, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Update scene and smoke expectations so the second article must resolve to a `flow` runtime and complete `cloud -> flow -> cloud` route transitions.
+- Green: Added `src/shaders/flow.frag` with embedded defaults and rewired the `motion-field` scene to load it as a `flow` runtime.
+- Refactor: Kept the existing renderer contract untouched by adapting the provided shader to `mainImage` and `iTime`/`iResolution` only.
+
+## Current Review
+- `npm test` passed, including the new scene contract that asserts the second article now uses the embedded `flow` shader.
+- `npm run build` passed and compiled the new fragment shader into the production bundle.
+- `npm run test:smoke` passed by navigating between article routes and asserting `cloud -> flow -> cloud` transitions in a real browser.

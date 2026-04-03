@@ -5,6 +5,6 @@ export const canvasTransitions: CanvasTransitionDefinition[] = [
   {
     id: "live-mix",
     fragmentShader: liveTransitionFragmentShader,
-    durationMs: 1200
+    durationMs: 1000
   }
 ];
