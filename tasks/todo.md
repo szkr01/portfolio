@@ -24,3 +24,20 @@
 - `npm run build` passed and emitted a production bundle through Vite.
 - `npm run test:smoke` passed in a real browser by scrolling sections and asserting `cloud -> cloud` continuity and `cloud -> ripple` live transition completion.
 - Runtime behavior: same-runtime section crossings keep `iTime` advancing, while cross-runtime section changes run a shader-based live compositor instead of resetting abruptly.
+
+## Current Plan
+- [x] Add failing tests for registry-driven article rendering, scene-id auto wiring, and primitive component contracts.
+- [x] Extract article layout primitives that encapsulate the current Tailwind styling without changing visuals.
+- [x] Split the current article content into section components and render them through a single registry in `ArticlePane`.
+- [x] Align scene/shader registration with the section registry and move shader assets out of `documents/`.
+- [x] Verify with `npm test`, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Added failing tests for the new article wrapper and primitive contracts, plus a registry-alignment test to lock section/scene wiring before refactoring.
+- Green: Implemented article primitives, split each article section into its own Vue component, rendered them through a registry-driven `ArticlePane`, and moved the cloud shader into `src/shaders`.
+- Refactor: Centralized section metadata in `articleSectionDefinitions`, so article rendering and canvas scene registration share the same ordered source of truth.
+
+## Current Review
+- `npm test` passed with the new article primitive tests, scene wrapper test, and section/scene registry alignment coverage.
+- `npm run build` passed after the article refactor and shader relocation.
+- `npm run test:smoke` passed in a real browser, confirming the existing scroll-driven canvas runtime behavior remained intact.
