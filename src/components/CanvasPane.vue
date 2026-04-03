@@ -1,13 +1,17 @@
 <script setup lang="ts">
+import type { CSSProperties } from "vue";
+
 defineProps<{
   setCanvas: (canvas: HTMLCanvasElement | null) => void;
+  paneStyle: CSSProperties;
 }>();
 </script>
 
 <template>
   <div
     id="left-pane"
-    class="canvas-container color-transition theme-border relative flex h-full w-1/2 items-center justify-center overflow-hidden border-r"
+    class="canvas-container color-transition theme-border relative flex h-full min-w-0 items-center justify-center overflow-hidden border-r"
+    :style="paneStyle"
   >
     <canvas
       :ref="

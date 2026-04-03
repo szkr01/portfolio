@@ -7,6 +7,10 @@ export interface ArticlePageEntry {
   title: string;
   sceneId: string;
   component: Component;
+  paneRatio: {
+    canvas: number;
+    article: number;
+  };
 }
 
 export const articlePages: ArticlePageEntry[] = [
@@ -14,13 +18,21 @@ export const articlePages: ArticlePageEntry[] = [
     slug: "color-harmony",
     title: "Color Harmony",
     sceneId: "color-harmony",
-    component: ColorHarmonyArticlePage
+    component: ColorHarmonyArticlePage,
+    paneRatio: {
+      canvas: 1,
+      article: 1
+    }
   },
   {
     slug: "motion-field",
     title: "Motion Field",
     sceneId: "motion-field",
-    component: MotionFieldArticlePage
+    component: MotionFieldArticlePage,
+    paneRatio: {
+      canvas: 1,
+      article: 3
+    }
   }
 ];
 

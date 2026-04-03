@@ -89,6 +89,43 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
     visibleContext.drawImage(source, 0, 0, canvas.width, canvas.height);
   }
 
+  function redrawVisible(now: number): void {
+    if (!canvas || !activeRuntimeKey) {
+      return;
+    }
+    const activeRuntime = runtimeInstances.get(activeRuntimeKey) ?? null;
+    if (activeRuntime) {
+      updateRuntimeFrame(activeRuntime, now);
+      activeRuntime.renderer.render(activeRuntime.frame);
+    }
+    if (transitionState) {
+      const fromRuntime = runtimeInstances.get(transitionState.fromRuntimeKey) ?? null;
+      const toRuntime = runtimeInstances.get(transitionState.toRuntimeKey) ?? null;
+      if (fromRuntime && toRuntime) {
+        updateRuntimeFrame(fromRuntime, now);
+        updateRuntimeFrame(toRuntime, now);
+        fromRuntime.renderer.render(fromRuntime.frame);
+        toRuntime.renderer.render(toRuntime.frame);
+        const progress = Math.min(
+          1,
+          Math.max(0, (now - transitionState.startedAtMs) / transitionState.definition.durationMs)
+        );
+        options.transitionRenderer.render(transitionState.definition, {
+          width: canvas.width,
+          height: canvas.height,
+          progress,
+          from: fromRuntime.renderer.captureFrame() ?? fromRuntime.canvas,
+          to: toRuntime.renderer.captureFrame() ?? toRuntime.canvas
+        });
+        drawToVisible(options.transitionRenderer.getOutput() ?? toRuntime.canvas);
+      }
+      return;
+    }
+    if (activeRuntime) {
+      drawToVisible(activeRuntime.renderer.captureFrame() ?? activeRuntime.canvas);
+    }
+  }
+
   function getOrCreateRuntime(scene: CanvasSceneDefinition): RuntimeInstance {
     const existing = runtimeInstances.get(scene.runtimeKey);
     if (existing) {
@@ -157,38 +194,16 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
   function renderLoop(now: number): void {
     currentGlobalTimeMs = now;
     if (canvas && activeRuntimeKey) {
-      const activeRuntime = runtimeInstances.get(activeRuntimeKey) ?? null;
-      if (activeRuntime) {
-        updateRuntimeFrame(activeRuntime, now);
-        activeRuntime.renderer.render(activeRuntime.frame);
-      }
+      redrawVisible(now);
       if (transitionState) {
-        const fromRuntime = runtimeInstances.get(transitionState.fromRuntimeKey) ?? null;
-        const toRuntime = runtimeInstances.get(transitionState.toRuntimeKey) ?? null;
-        if (fromRuntime && toRuntime) {
-          updateRuntimeFrame(fromRuntime, now);
-          updateRuntimeFrame(toRuntime, now);
-          fromRuntime.renderer.render(fromRuntime.frame);
-          toRuntime.renderer.render(toRuntime.frame);
-          const progress = Math.min(
-            1,
-            Math.max(0, (now - transitionState.startedAtMs) / transitionState.definition.durationMs)
-          );
-          options.transitionRenderer.render(transitionState.definition, {
-            width: canvas.width,
-            height: canvas.height,
-            progress,
-            from: fromRuntime.renderer.captureFrame() ?? fromRuntime.canvas,
-            to: toRuntime.renderer.captureFrame() ?? toRuntime.canvas
-          });
-          drawToVisible(options.transitionRenderer.getOutput() ?? toRuntime.canvas);
-          if (progress >= 1) {
-            disposeRuntime(transitionState.fromRuntimeKey);
-            transitionState = null;
-          }
+        const progress = Math.min(
+          1,
+          Math.max(0, (now - transitionState.startedAtMs) / transitionState.definition.durationMs)
+        );
+        if (progress >= 1) {
+          disposeRuntime(transitionState.fromRuntimeKey);
+          transitionState = null;
         }
-      } else if (activeRuntime) {
-        drawToVisible(activeRuntime.renderer.captureFrame() ?? activeRuntime.canvas);
       }
       if (now - lastSampleTime >= sampleIntervalMs) {
         if (canvas) {
@@ -321,6 +336,7 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
         runtime.canvas.height = canvas.height;
         runtime.renderer.resize(canvas.width, canvas.height);
       }
+      redrawVisible(currentGlobalTimeMs);
     },
     dispose() {
       stopLoop();

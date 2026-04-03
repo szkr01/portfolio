@@ -74,4 +74,27 @@ describe("App", () => {
     expect(activate).toHaveBeenCalledWith(articlePages[0].sceneId, "init");
     expect(activate).toHaveBeenCalledWith(articlePages[1].sceneId, "manual");
   });
+
+  it("applies the active article pane ratio to the canvas and article panes", async () => {
+    activate.mockReset();
+    const router = createTestRouter();
+    await router.push(`/articles/${articlePages[0].slug}`);
+    await router.isReady();
+
+    const wrapper = mount(App, {
+      global: {
+        plugins: [router]
+      }
+    });
+    await nextTick();
+
+    expect(wrapper.get("#left-pane").attributes("style")).toContain("flex-grow: 1;");
+    expect(wrapper.get("#right-pane").attributes("style")).toContain("flex-grow: 1;");
+
+    await router.push(`/articles/${articlePages[1].slug}`);
+    await nextTick();
+
+    expect(wrapper.get("#left-pane").attributes("style")).toContain("flex-grow: 1;");
+    expect(wrapper.get("#right-pane").attributes("style")).toContain("flex-grow: 3;");
+  });
 });

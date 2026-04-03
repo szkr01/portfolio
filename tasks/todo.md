@@ -73,3 +73,32 @@
 - `npm test` passed with updated controller coverage for page-time continuity across runtime switches and live transitions.
 - `npm run build` passed after the frame/debug type rename and controller clock change.
 - `npm run test:smoke` passed, confirming route-driven canvas transitions still work in a real browser.
+
+## Current Plan
+- [x] Add failing tests for per-article pane ratios and canvas resize propagation when pane widths change.
+- [x] Extend article page metadata with pane ratio values and drive the shell layout from route metadata.
+- [x] Detect canvas element size changes with minimal controller wiring so animated pane ratio changes keep render resolution in sync.
+- [x] Verify with `npm test` and `npm run build`.
+
+## Current TDD Log
+- Red: Added failing app coverage for route-specific pane ratios and a composable test that requires `ResizeObserver`-driven controller resizes when the canvas element changes size.
+- Green: Added per-article `paneRatio` metadata, drove left/right pane `flex-grow` from the active route with eased transitions, and observed the canvas element for non-window size changes.
+- Refactor: Kept the existing shell/component structure intact by threading a single style prop into each pane instead of moving layout ownership deeper into the tree.
+
+## Current Review
+- `npm test` passed with the new pane-ratio and `ResizeObserver` coverage alongside the existing controller, routing, and smoke-contract tests.
+- `npm run build` passed and emitted a production bundle with the ratio-driven shell layout.
+
+## Current Plan
+- [x] Add failing controller coverage for redraw-on-resize while an active scene or transition is already visible.
+- [x] Redraw the current canvas state immediately after resize so animated pane ratio changes do not flash white.
+- [x] Verify with `npm test` and `npm run build`.
+
+## Current TDD Log
+- Red: Added failing controller coverage that reproduces the white flash by resizing after an active scene is already bound to the visible canvas.
+- Green: Reused the controller's current-frame composition path during `resize()` so the visible canvas is repainted immediately after width/height changes.
+- Refactor: Pulled the visible redraw logic into a shared helper so resize and the animation loop stay on the same composition behavior.
+
+## Current Review
+- `npm test` passed with the new resize-redraw regression coverage and the existing app, controller, and smoke-contract suites.
+- `npm run build` passed after the controller redraw fix.

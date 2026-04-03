@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import type { CSSProperties } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 import { articlePages } from "../content/articlePages";
+
+defineProps<{
+  paneStyle: CSSProperties;
+}>();
 
 const route = useRoute();
 </script>
@@ -8,7 +13,8 @@ const route = useRoute();
 <template>
   <div
     id="right-pane"
-    class="theme-bg color-transition h-full w-1/2 overflow-y-auto px-12 py-16"
+    class="theme-bg color-transition h-full min-w-0 overflow-y-auto px-12 py-16"
+    :style="paneStyle"
   >
     <div class="mx-auto max-w-2xl">
       <nav class="theme-border mb-12 flex flex-wrap gap-3 border-b pb-4">

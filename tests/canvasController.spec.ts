@@ -211,4 +211,64 @@ describe("createCanvasController", () => {
       secondRuntimeFrames[0]?.pageTimeMs ?? 0
     );
   });
+
+  it("redraws the visible canvas immediately after resize so the active scene does not flash blank", async () => {
+    const shaderRenderer = createRenderer("shader");
+    const transitionRenderer = {
+      mount: vi.fn(),
+      render: vi.fn(),
+      resize: vi.fn(),
+      dispose: vi.fn(),
+      getOutput: vi.fn(() => document.createElement("canvas"))
+    };
+    const controller = createCanvasController({
+      rendererFactory: vi.fn(() => shaderRenderer),
+      transitionRenderer,
+      transitions: [{ id: "ripple-mix", fragmentShader: "void main() {}", durationMs: 600 }],
+      requestFrame: vi.fn(() => 1),
+      cancelFrame: vi.fn()
+    });
+    const visibleContext = {
+      clearRect: vi.fn(),
+      drawImage: vi.fn()
+    };
+    const canvas = document.createElement("canvas");
+    canvas.getBoundingClientRect = vi.fn(() => ({
+      width: 320,
+      height: 240,
+      top: 0,
+      left: 0,
+      right: 320,
+      bottom: 240,
+      x: 0,
+      y: 0,
+      toJSON: () => ({})
+    }));
+    canvas.getContext = vi.fn((kind: string) => {
+      if (kind === "2d") {
+        return visibleContext as unknown as CanvasRenderingContext2D;
+      }
+      return null;
+    }) as unknown as HTMLCanvasElement["getContext"];
+
+    controller.bind(canvas);
+    controller.registerScenes([
+      {
+        id: "hero",
+        runtimeKey: "cloud",
+        kind: "shader",
+        source: { fragmentShader: "void mainImage(out vec4 c, in vec2 f){c=vec4(1.0);}" }
+      }
+    ]);
+    await controller.activate("hero", "init");
+
+    visibleContext.clearRect.mockClear();
+    visibleContext.drawImage.mockClear();
+
+    controller.resize();
+
+    expect(shaderRenderer.render).toHaveBeenCalled();
+    expect(visibleContext.clearRect).toHaveBeenCalledTimes(1);
+    expect(visibleContext.drawImage).toHaveBeenCalledTimes(1);
+  });
 });

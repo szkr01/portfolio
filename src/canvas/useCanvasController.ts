@@ -24,6 +24,7 @@ export function useCanvasController(): {
 } {
   const canvasRef = ref<HTMLCanvasElement | null>(null);
   const theme = ref<ThemeTokens>(defaultTheme);
+  let resizeObserver: ResizeObserver | null = null;
   const controller = createCanvasController({
     rendererFactory: createRendererFactory(),
     transitionRenderer: createTransitionRenderer(),
@@ -46,6 +47,12 @@ export function useCanvasController(): {
     controller.bind(canvasRef.value);
     controller.registerScenes(canvasScenes);
     window.addEventListener("resize", handleResize);
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(() => {
+        controller.resize();
+      });
+      resizeObserver.observe(canvasRef.value);
+    }
     Object.assign(window, {
       __PORTFOLIO_CANVAS_DEBUG__: () => controller.getDebugState()
     });
@@ -54,6 +61,8 @@ export function useCanvasController(): {
   onBeforeUnmount(() => {
     cleanupThemeSubscription();
     window.removeEventListener("resize", handleResize);
+    resizeObserver?.disconnect();
+    resizeObserver = null;
     Object.assign(window, {
       __PORTFOLIO_CANVAS_DEBUG__: undefined
     });
