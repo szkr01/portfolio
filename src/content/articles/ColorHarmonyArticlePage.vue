@@ -4,9 +4,11 @@ import ArticleCardGrid from "../../components/article/ArticleCardGrid.vue";
 import ArticleHeading from "../../components/article/ArticleHeading.vue";
 import ArticleNumberList from "../../components/article/ArticleNumberList.vue";
 import ArticleQuote from "../../components/article/ArticleQuote.vue";
+import ArticleTagList from "../../components/article/ArticleTagList.vue";
 import ArticleText from "../../components/article/ArticleText.vue";
 import InlineAccent from "../../components/article/InlineAccent.vue";
 import InlineCode from "../../components/article/InlineCode.vue";
+import ParallaxContainer from "../../components/article/ParallaxContainer.vue";
 
 const mechanicsItems = [
   "Extract dominant neutral tones to formulate subtle background tints and determine Light/Dark mode.",
@@ -14,27 +16,48 @@ const mechanicsItems = [
   "Calculate a 180 degree hue shift for the complementary accent to provide secondary highlights.",
   "Apply an Exponential Moving Average (EMA) to smooth the transition beautifully over time."
 ];
+
+const interestedItems = [
+  "Machine Learning",
+  "Searching",
+  "Rendering",
+  "Reverse Engineering",
+  "Design",
+  "Music",
+];
 </script>
 
 <template>
   <article>
     <header class="mb-12">
+      <div class="my-8">
+        <ParallaxContainer />
+      </div>
       <ArticleHeading :level="1">
         About :
         <span class="theme-accent color-transition">szkr01</span>
       </ArticleHeading>
+
       <p class="theme-muted color-transition text-lg leading-relaxed">
-        プログラミング、機械学習、絵、音楽普段は、Web アプリや画像表現、検索システムなどを作っています。見た目だけでなく、内部の仕組みや実装そのものにも興味があり、リバースエンジニアリングが好きです。抽象化された設計が好み。
+        プログラミング、機械学習、絵、音楽<br />
+        普段は、Web アプリや画像表現、検索システムなどを作っています。見た目だけでなく、内部の仕組みや実装そのものにも興味があり、リバースエンジニアリングが好きです。抽象化された設計が好み。
       </p>
     </header>
 
     <section class="mb-10">
-      <ArticleHeading :level="2" accent bordered>Understanding Complements</ArticleHeading>
+      <ArticleHeading :level="2" accent bordered>Interested In</ArticleHeading>
       <ArticleText class="mb-4">
-        Complementary colors are pairs of colors which, when combined or mixed, cancel each other
-        out by producing a grayscale color like white or black. When placed next to each other,
-        they create the strongest contrast for those two colors.
+        関心のある分野や技術スタック
       </ArticleText>
+      <ArticleTagList :items="interestedItems" />
+    </section>
+
+    <section class="mb-10">
+      <ArticleHeading :level="2" accent bordered>Works</ArticleHeading>
+      <ArticleText class="mb-4">
+        過去の作品群
+      </ArticleText>
+      <ArticleNumberList :items="mechanicsItems" />
       <ArticleQuote attribution="Pierre Bonnard">
         "Color does not add a pleasant quality to design - it reinforces it." <br />
       </ArticleQuote>
@@ -80,7 +103,7 @@ const mechanicsItems = [
         <InlineCode>OffscreenCanvas</InlineCode>
         to render the exact viewport you are looking at.
       </ArticleText>
-      <ArticleNumberList :items="mechanicsItems" />
+
     </section>
   </article>
 </template>

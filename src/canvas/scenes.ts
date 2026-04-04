@@ -1,5 +1,5 @@
 import { articlePages } from "../content/articlePages";
-import imageDriftAsset from "../content/assets/articles/image-drift/testImage.webp";
+import imageDriftAsset from "../content/assets/articles/image-drift/testImage.jpg";
 import cloudFragmentShader from "../shaders/cloud.frag?raw";
 import flowFragmentShader from "../shaders/flow.frag?raw";
 import type { CanvasSceneDefinition } from "./types";
