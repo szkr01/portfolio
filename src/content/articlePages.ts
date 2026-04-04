@@ -1,5 +1,5 @@
 import type { Component } from "vue";
-import ColorHarmonyArticlePage from "./articles/ColorHarmonyArticlePage.vue";
+import AboutArticlePage from "./articles/AboutArticlePage.vue";
 import ImageDriftArticlePage from "./articles/ImageDriftArticlePage.vue";
 import MotionFieldArticlePage from "./articles/MotionFieldArticlePage.vue";
 
@@ -21,7 +21,7 @@ export const articlePages: ArticlePageEntry[] = [
     title: "About",
     sceneId: "About",
     themeMode: "light",
-    component: ColorHarmonyArticlePage,
+    component: AboutArticlePage,
     paneRatio: {
       canvas: 1,
       article: 1
