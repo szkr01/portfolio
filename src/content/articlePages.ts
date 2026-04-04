@@ -1,7 +1,7 @@
 import type { Component } from "vue";
 import AboutArticlePage from "./articles/AboutArticlePage.vue";
 import ImageDriftArticlePage from "./articles/ImageDriftArticlePage.vue";
-import MotionFieldArticlePage from "./articles/MotionFieldArticlePage.vue";
+import WorksArticlePage from "./articles/WorksArticlePage.vue";
 
 export interface ArticlePageEntry {
   slug: string;
@@ -28,14 +28,14 @@ export const articlePages: ArticlePageEntry[] = [
     }
   },
   {
-    slug: "motion-field",
-    title: "Motion Field",
-    sceneId: "motion-field",
+    slug: "works",
+    title: "Works",
+    sceneId: "works",
     themeMode: "dark",
-    component: MotionFieldArticlePage,
+    component: WorksArticlePage,
     paneRatio: {
       canvas: 1,
-      article: 3
+      article: 1
     }
   },
   {

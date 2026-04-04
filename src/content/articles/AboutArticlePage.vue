@@ -33,7 +33,6 @@ const technicalSkillsItems = [
   "x86-64 Assembly",
   "PowerPC Assembly",
   "GLSL",
-  "UIUA",
 ];
 
 const toolsItems = [
@@ -55,7 +54,7 @@ const toolsItems = [
         <ParallaxContainer />
       </div>
       <ArticleHeading :level="1">
-        About :
+        About: 
         <span class="theme-accent color-transition">szkr01</span>
       </ArticleHeading>
 
@@ -76,7 +75,7 @@ const toolsItems = [
     <section class="mb-10">
       <ArticleHeading :level="2" accent bordered>Technical Skills</ArticleHeading>
       <ArticleText class="mb-4">
-        触ったことのある技術スタック
+        経験のある技術スタック
       </ArticleText>
       <ArticleTagList :items="technicalSkillsItems" />
     </section>

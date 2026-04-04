@@ -60,8 +60,8 @@ export async function runCanvasTransitionSmoke() {
       throw new Error(`Expected initial runtime to be cloud, received ${JSON.stringify(initial)}`);
     }
 
-    await page.getByRole("link", { name: "Motion Field" }).click();
-    await page.waitForURL((url) => url.hash.includes("/articles/motion-field"));
+    await page.getByRole("link", { name: "Works" }).click();
+    await page.waitForURL((url) => url.hash.includes("/articles/works"));
     await page.waitForFunction(() => {
       const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
       return Boolean(state?.transition?.running);

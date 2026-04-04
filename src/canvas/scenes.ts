@@ -16,7 +16,7 @@ export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) =>
     };
   }
 
-  if (entry.sceneId === "motion-field") {
+  if (entry.sceneId === "works") {
     return {
       id: entry.sceneId,
       runtimeKey: "flow",
