@@ -163,3 +163,17 @@
 - `npx vitest run tests/viteConfig.spec.ts` passed and asserted `server.watch.usePolling === true` with `interval: 100`.
 - `npm run build` passed after the Vite watch change.
 - `npm test` still fails in pre-existing `tests/app.spec.ts` because the suite expects `Color Harmony & Contrast` while the current app content renders `About`; this is unrelated to the hot-reload fix.
+
+## Current Plan
+- [x] Define a minimal editable contract for `scripts/images.js` that accepts pasted base64 image sources.
+- [x] Implement transparent image export into `scripts/out` without adding app-side dependencies.
+- [ ] Verify the script runs cleanly with an empty `layerSources` placeholder and document the result.
+
+## Current TDD Log
+- Red: `scripts/images.js` was only a comment stub and could not be executed.
+- Green: Replaced it with a Node ESM script that decodes data URLs or raw base64 strings and writes files into `scripts/out`.
+- Refactor: Kept the input contract flat and editable so future manual image insertion only touches `layerSources`.
+
+## Current Review
+- `node scripts/images.js` passed with the placeholder empty array and exited with an instructional message instead of throwing.
+- Runtime contract: paste base64 strings or `{ name, data, extension }` objects into `layerSources`, then run `node scripts/images.js` to emit files into `scripts/out`.
