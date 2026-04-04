@@ -42,6 +42,17 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
           <br/>
           フルスクラッチで学習された、画像のピクセル単位で動作するTransformerベースのDiffusionモデル。非常に小さく、スマホで動作します。
         </li>
+        <li>
+          <strong><ArticleLink href="https://github.com/szkr01/HRM-sudoku">HRM-sudoku</ArticleLink></strong>
+          <br/>
+          Hierarchical Reasoning Modelを用いた数独ソルバーのToy実装。
+        </li>
+        <li>
+          <strong><ArticleLink href="https://github.com/szkr01/VAE_of_Theseus">VAE_of_Theseus</ArticleLink></strong>
+          <br/>
+          Subramaniam らの論文「<ArticleLink href="https://arxiv.org/abs/2512.04198">Network of Theseus (like the ship)</ArticleLink>」の実験コード。大学のレポート題材として作成。
+        </li>
+        
       </ul>
     </section>
 
@@ -69,6 +80,7 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
           <br/>
           Ableton Liveのレンダラーにフックし、シェーダーによる動的な視覚エフェクトを加えるMod。
         </li>
+
       </ul>
     </section>
 
@@ -77,15 +89,23 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
       <ul class="list-disc pl-6 mt-4 space-y-2 theme-text color-transition leading-relaxed">
         <li>
           <strong><ArticleLink href="https://szkr01.github.io/WASTE_APPS/pages/OverSub.html">Sketch Book</ArticleLink></strong>
-          - 読み音韻を意識しながら書ける歌詞エディタ。楽曲「過置換」に影響を受け作成。
+          - 読み音韻を意識しながら書ける歌詞エディタ。楽曲「<ArticleLink href="https://youtu.be/8T6zb3059P4?si=AyA1H89LCF4Etsaf">過置換</ArticleLink>」に影響を受け作成。
         </li>
         <li>
           <strong><ArticleLink href="https://szkr01.github.io/WASTE_APPS/pages/ParallaxGenerator.html">Parallax Generator</ArticleLink></strong>
           - 視差効果を簡単に作成できるウェブアプリ。
         </li>
         <li>
+          <strong><ArticleLink href="https://szkr01.github.io/WASTE_APPS/pages/depth_map.html">Image to 3D Viewer</ArticleLink></strong>
+          - 画像の深度マップを推定し、簡単な3Dビューアで表示するウェブアプリ。
+        </li>
+        <li>
           <strong><ArticleLink href="https://szkr01.github.io/WASTE_APPS/pages/QRtest.html">CuteR web</ArticleLink></strong>
           - 画像を埋め込んだQRコードを生成できるウェブアプリ。<ArticleLink href="https://github.com/chinuno-usami/CuteR">CuteR</ArticleLink>のweb版。
+        </li>
+        <li>
+          <strong><ArticleLink href="https://szkr01.github.io/WASTE_APPS/pages/AudioSorter.html">WaveSort</ArticleLink></strong>
+          - 音声をN分割し、ソートをした際にアクセスした音を構築するwebプレイグラウンド。
         </li>
         <li>
           <strong><ArticleLink href="https://szkr01.github.io/WASTE_APPS/">WASTE APPS</ArticleLink></strong>
