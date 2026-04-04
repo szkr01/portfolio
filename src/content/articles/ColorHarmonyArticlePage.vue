@@ -20,12 +20,11 @@ const mechanicsItems = [
   <article>
     <header class="mb-12">
       <ArticleHeading :level="1">
-        Color Harmony &
-        <span class="theme-accent color-transition">Contrast</span>
+        About :
+        <span class="theme-accent color-transition">szkr01</span>
       </ArticleHeading>
       <p class="theme-muted color-transition text-lg leading-relaxed">
-        A visual exploration of dynamic themes driven by localized spatial color sampling. As you
-        navigate the image, the background, text, and accents adapt in real-time.
+        プログラミング、機械学習、絵、音楽普段は、Web アプリや画像表現、検索システムなどを作っています。見た目だけでなく、内部の仕組みや実装そのものにも興味があり、リバースエンジニアリングが好きです。抽象化された設計が好み。
       </p>
     </header>
 

@@ -5,7 +5,7 @@ import flowFragmentShader from "../shaders/flow.frag?raw";
 import type { CanvasSceneDefinition } from "./types";
 
 export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) => {
-  if (entry.sceneId === "color-harmony") {
+  if (entry.sceneId === "About") {
     return {
       id: entry.sceneId,
       runtimeKey: "cloud",

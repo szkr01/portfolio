@@ -17,9 +17,9 @@ export interface ArticlePageEntry {
 
 export const articlePages: ArticlePageEntry[] = [
   {
-    slug: "color-harmony",
-    title: "Color Harmony",
-    sceneId: "color-harmony",
+    slug: "About",
+    title: "About",
+    sceneId: "About",
     themeMode: "light",
     component: ColorHarmonyArticlePage,
     paneRatio: {

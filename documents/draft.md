@@ -1,3 +1,5 @@
+# DRAFT
+```
 szkr01
 プログラミングと機械学習と絵と音楽
 抽象的なものが好き
@@ -7,11 +9,9 @@ Optimized Japanese for coding agent
 Machine Learning
 Reverse　Enginering
 
-# Blog
-coming soon
-
-# Projects
+## Projects
 https://szkr01.github.io/WASTE_APPS/pages/OverSub.html
+Sketch Book
 読み音韻を意識しながら書ける歌詞エディタ
 過置換 という曲のMVに影響され作成
 
@@ -52,16 +52,37 @@ https://szkr01.github.io/WASTE_APPS/
 WASTE APPS
 言語モデルに量産させたアプリケーション群
 
-
 LostCode
 Rigid body Item MOD
 コンソール版のマインクラフトMOD
 物理エンジンを実装し、アイテムに剛体挙動が適応されるMOD
 アセンブリ直書き
 
-
-# My music
-
-
-# My Illustration
+## My music
 TODO
+
+## My Illustration
+TODO
+```
+
+# About
+szkr01
+プログラミング、機械学習、絵、音楽
+普段は、Web アプリや画像表現、検索システムなどを作っています。
+見た目だけでなく、内部の仕組みや実装そのものにも興味があり、リバースエンジニアリングが好きです。
+抽象化された設計が好み。
+
+
+## interested
+Machine Learning
+Searching
+Rendering
+Reverse Engineering
+Design
+Music
+
+##　Works overview
+- Sketch Book
+- Pure ILEMB
+- Shader Editor
+- DOPE ABLETON MOD

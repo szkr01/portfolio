@@ -96,8 +96,8 @@ export async function runCanvasTransitionSmoke() {
       throw new Error(`Expected image article runtime to be image-drift, received ${JSON.stringify(imageArticle)}`);
     }
 
-    await page.getByRole("link", { name: "Color Harmony" }).click();
-    await page.waitForURL((url) => url.hash.includes("/articles/color-harmony"));
+    await page.getByRole("link", { name: "About" }).click();
+    await page.waitForURL((url) => url.hash.includes("/articles/About"));
     await page.waitForFunction(() => {
       const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
       return state?.activeRuntimeKey === "cloud" && state?.transition === null;

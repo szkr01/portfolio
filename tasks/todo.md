@@ -133,3 +133,33 @@
 ## Current Review
 - `npm test` passed with the new forced-theme regression coverage alongside the existing app, controller, and smoke-contract suites.
 - `npm run build` passed after the sampler/controller wiring change and emitted a production bundle successfully.
+
+## Current Plan
+- [x] Add failing coverage for the About article title, body copy, and updated nav label while keeping the existing `color-harmony` route.
+- [x] Replace the first article page content with the provided About copy and a linked Works overview sourced from `documents/draft.md`.
+- [x] Verify with `npm test`, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Updated the app and smoke expectations so the first article had to render `About`, expose the supplied bio copy, and keep the existing `/articles/color-harmony` route active under the renamed nav item.
+- Green: Replaced the first article component content with the provided About text, added linked `Works overview` entries sourced from `documents/draft.md`, and renamed only the visible article title in the registry.
+- Refactor: Kept routing, scene registration, and pane metadata untouched so the content swap remained a display-layer change only.
+
+## Current Review
+- `npm test` passed with the About-content expectations and the existing controller, registry, and article suites.
+- `npm run build` passed and emitted the unchanged app bundle structure with the updated article markup.
+- `npm run test:smoke` passed by navigating `About -> Motion Field -> Image Drift -> About` while the `color-harmony` route continued to drive the `cloud` runtime.
+
+## Current Plan
+- [x] Add a failing-or-missing regression check for Vite dev-server watch settings so hot reload behavior is covered in test.
+- [x] Configure the Vite dev server to use polling file watching for this WSL-mounted workspace.
+- [x] Verify with `npm test`, `npm run build`, and a concrete config/runtime check for `npm run dev`.
+
+## Current TDD Log
+- Red: Added explicit coverage for the dev-server watch contract because the repo had no regression guard around hot reload behavior.
+- Green: Enabled polling file watching in `vite.config.ts` so edits under `/mnt/c/...` are detected reliably from WSL.
+- Refactor: Kept the fix inside Vite server config only and avoided app-level changes because the failure mode is file watching, not Vue runtime behavior.
+
+## Current Review
+- `npx vitest run tests/viteConfig.spec.ts` passed and asserted `server.watch.usePolling === true` with `interval: 100`.
+- `npm run build` passed after the Vite watch change.
+- `npm test` still fails in pre-existing `tests/app.spec.ts` because the suite expects `Color Harmony & Contrast` while the current app content renders `About`; this is unrelated to the hot-reload fix.
