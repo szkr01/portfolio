@@ -1,5 +1,6 @@
 import type { Component } from "vue";
 import AboutArticlePage from "./articles/AboutArticlePage.vue";
+import ContactArticlePage from "./articles/ContactArticlePage.vue";
 import ImageDriftArticlePage from "./articles/ImageDriftArticlePage.vue";
 import WorksArticlePage from "./articles/WorksArticlePage.vue";
 
@@ -44,6 +45,17 @@ export const articlePages: ArticlePageEntry[] = [
     sceneId: "image-drift",
     themeMode: "light",
     component: ImageDriftArticlePage,
+    paneRatio: {
+      canvas: 1,
+      article: 1
+    }
+  },
+  {
+    slug: "contact",
+    title: "Contact",
+    sceneId: "contact",
+    themeMode: "light",
+    component: ContactArticlePage,
     paneRatio: {
       canvas: 1,
       article: 1
