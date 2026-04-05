@@ -187,3 +187,12 @@
 - Added a blink-style render swap in `ParallaxContainer` that preloads both layer sets, switches to `altlayerSources` for 120ms at random 2.5s-6s intervals, and keeps the existing parallax drift intact.
 - Added unmount cleanup for pointer listeners and the animation frame so route changes do not leave duplicate loops attached.
 - `npm run build` still fails due to the existing `tests/viteConfig.spec.ts` Node type issues; the earlier `ParallaxContainer` nullability errors no longer appear.
+
+## Current Plan
+- [x] Add a visible loading state to `ParallaxContainer` while parallax layers preload.
+- [x] Hide the loading state immediately after both normal and blink layers are ready.
+- [x] Keep the loader self-contained inside the component without changing public props.
+
+## Current Review
+- Added `isLoading` state to `ParallaxContainer` and now show a centered ring spinner overlay until both image sets finish preloading.
+- Kept the loader scoped to the component with its own overlay and keyframes so no global styling changes were required.

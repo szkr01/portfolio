@@ -49,6 +49,7 @@ const BLINK_INTERVAL_MIN_MS = 2500;
 const BLINK_INTERVAL_MAX_MS = 8000;
 
 const containerRef = ref<HTMLElement | null>(null);
+const isLoading = ref(true);
 let animationFrameId = 0;
 let cleanupInteraction: (() => void) | null = null;
 
@@ -116,6 +117,7 @@ onMounted(() => {
       canvas.width = imageLayers[0].naturalWidth;
       canvas.height = imageLayers[0].naturalHeight;
     }
+    isLoading.value = false;
     
     const moveHandler = (e: MouseEvent | TouchEvent) => {
       const rect = mountContainer.getBoundingClientRect();
@@ -200,5 +202,40 @@ onBeforeUnmount(() => {
       userSelect: 'none',
       touchAction: 'none'
     }"
-  ></div>
+  >
+    <div v-if="isLoading" class="parallax-loader">
+      <div class="parallax-loader__ring"></div>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.parallax-loader {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.78), rgba(240, 240, 240, 0.92));
+  pointer-events: none;
+}
+
+.parallax-loader__ring {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 2px solid rgba(17, 17, 17, 0.12);
+  border-top-color: rgba(17, 17, 17, 0.72);
+  border-radius: 9999px;
+  animation: parallax-spin 0.8s linear infinite;
+}
+
+@keyframes parallax-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
