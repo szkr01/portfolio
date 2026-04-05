@@ -73,14 +73,32 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
         </li>
         <li>
           <strong><ArticleLink href="https://szkr01.github.io/PQR-ts/">PQR-ts</ArticleLink></strong>
-          - 音楽の歌詞に合わせて動くインタラクティブなQRコード実装。
+          - 音楽の歌詞に合わせて動くQRコード。
         </li>
         <li>
           <strong><ArticleLink href="https://github.com/szkr01/DOPE_ABLETON_MOD">DOPE ABLETON MOD</ArticleLink></strong>
           <br/>
           Ableton Liveのレンダラーにフックし、シェーダーによる動的な視覚エフェクトを加えるMod。
         </li>
+      </ul>
+    </section>
 
+    <section class="mb-10">
+      <ArticleHeading :level="2" accent bordered>p5.js sketch</ArticleHeading>
+      <ul class="list-disc pl-6 mt-4 space-y-2 theme-text color-transition leading-relaxed">
+        <li>
+          <strong><ArticleLink href="https://editor.p5js.org/szkr01/sketches/emdQKs8BS">BoidSphere</ArticleLink></strong>
+          - Boidアルゴリズムを球面上で動かしたスケッチ。
+        </li>
+        <li>
+          <strong><ArticleLink href="https://editor.p5js.org/szkr01/sketches/Hha8Fp1vf">circle-wave</ArticleLink></strong>
+          - パーフェクトループを試したスケッチ。
+        </li>
+        <li>
+          <strong><ArticleLink href="https://editor.p5js.org/szkr01/sketches/EP3LLSLIo">Maclaurin expansion</ArticleLink></strong>
+          - 楕円をマクローリン展開で近似するスケッチ。
+        </li>
+        
       </ul>
     </section>
 

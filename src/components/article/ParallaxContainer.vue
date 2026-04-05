@@ -34,6 +34,15 @@ const layerSources: string[] = [
   'src/content/assets/parallax/layer-06.png'
 ];
 
+const altlayerSources: string[] = [
+  'src/content/assets/parallax/layer-01.png',
+  'src/content/assets/parallax/layer-02.png',
+  'src/content/assets/parallax/layer-03.png',
+  'src/content/assets/parallax/layer-04.png',
+  'src/content/assets/parallax/layer-05-1.png',
+  'src/content/assets/parallax/layer-06-1.png'
+];
+
 const containerRef = ref<HTMLElement | null>(null);
 let animationFrameId = 0;
 
