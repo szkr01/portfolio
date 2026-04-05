@@ -177,3 +177,13 @@
 ## Current Review
 - `node scripts/images.js` passed with the placeholder empty array and exited with an instructional message instead of throwing.
 - Runtime contract: paste base64 strings or `{ name, data, extension }` objects into `layerSources`, then run `node scripts/images.js` to emit files into `scripts/out`.
+
+## Current Plan
+- [x] Add a minimal blink animation plan entry for `ParallaxContainer` using `altlayerSources` as a temporary render source.
+- [x] Implement random blink scheduling and dual-layer preloading in `ParallaxContainer` without changing its public props.
+- [x] Verify the component behavior and note any unrelated baseline build/test failures in review.
+
+## Current Review
+- Added a blink-style render swap in `ParallaxContainer` that preloads both layer sets, switches to `altlayerSources` for 120ms at random 2.5s-6s intervals, and keeps the existing parallax drift intact.
+- Added unmount cleanup for pointer listeners and the animation frame so route changes do not leave duplicate loops attached.
+- `npm run build` still fails due to the existing `tests/viteConfig.spec.ts` Node type issues; the earlier `ParallaxContainer` nullability errors no longer appear.
