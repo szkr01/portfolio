@@ -47,6 +47,30 @@ const BLINK_DURATION_MIN_MS = 120;
 const BLINK_DURATION_MAX_MS = 300;
 const BLINK_INTERVAL_MIN_MS = 2500;
 const BLINK_INTERVAL_MAX_MS = 8000;
+const TRACK_POINTER_ON_PAGE = true;
+
+function computeParallaxPointerTarget(
+  clientX: number,
+  clientY: number,
+  rect: DOMRect | Omit<DOMRect, 'toJSON'>
+) {
+  if (rect.width <= 0 || rect.height <= 0) {
+    return { x: 0, y: 0 };
+  }
+
+  const rawX = ((clientX - rect.left) / rect.width - 0.5) * 2;
+  const rawY = ((clientY - rect.top) / rect.height - 0.5) * 2;
+  const magnitude = Math.hypot(rawX, rawY);
+
+  if (magnitude <= Math.sqrt(2)) {
+    return { x: rawX, y: rawY };
+  }
+Math.sqrt(2)
+  return {
+    x: rawX / magnitude*Math.sqrt(2),
+    y: rawY / magnitude*Math.sqrt(2)
+  };
+}
 
 const containerRef = ref<HTMLElement | null>(null);
 const isLoading = ref(true);
@@ -69,9 +93,24 @@ onMounted(() => {
   mountContainer.appendChild(canvas);
   
   let parallaxMouse = { x: 0, y: 0 }, targetParallaxMouse = { x: 0, y: 0 };
+  let lastPagePointer: { clientX: number; clientY: number } | null = null;
   const LERP_FACTOR = 0.08;
   let nextBlinkAtMs = 0;
   let blinkUntilMs = 0;
+
+  function updateTargetFromPointerPosition(clientX: number, clientY: number) {
+    const rect = mountContainer.getBoundingClientRect();
+    targetParallaxMouse = computeParallaxPointerTarget(clientX, clientY, rect);
+  }
+
+  function updateTargetFromPagePointer() {
+    if (!lastPagePointer) {
+      targetParallaxMouse = { x: 0, y: 0 };
+      return;
+    }
+
+    updateTargetFromPointerPosition(lastPagePointer.clientX, lastPagePointer.clientY);
+  }
 
   function scheduleNextBlink(now: number) {
     nextBlinkAtMs = now + BLINK_INTERVAL_MIN_MS + Math.random() * (BLINK_INTERVAL_MAX_MS - BLINK_INTERVAL_MIN_MS);
@@ -84,6 +123,10 @@ onMounted(() => {
   function render() {
     animationFrameId = requestAnimationFrame(render);
     if (layersLoaded < layerSources.length || blinkLayersLoaded < altlayerSources.length) return;
+
+    if (TRACK_POINTER_ON_PAGE) {
+      updateTargetFromPagePointer();
+    }
     
     parallaxMouse.x += (targetParallaxMouse.x - parallaxMouse.x) * LERP_FACTOR;
     parallaxMouse.y += (targetParallaxMouse.y - parallaxMouse.y) * LERP_FACTOR;
@@ -118,26 +161,46 @@ onMounted(() => {
       canvas.height = imageLayers[0].naturalHeight;
     }
     isLoading.value = false;
-    
-    const moveHandler = (e: MouseEvent | TouchEvent) => {
-      const rect = mountContainer.getBoundingClientRect();
+
+    const localMoveHandler = (e: MouseEvent | TouchEvent) => {
       const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
       const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
-      targetParallaxMouse.x = ((clientX - rect.left) / rect.width - 0.5) * 2;
-      targetParallaxMouse.y = ((clientY - rect.top) / rect.height - 0.5) * 2;
+      updateTargetFromPointerPosition(clientX, clientY);
     };
-    const resetTarget = () => { targetParallaxMouse = { x: 0, y: 0 }; };
-    
-    mountContainer.addEventListener('mousemove', moveHandler as EventListener);
-    mountContainer.addEventListener('touchmove', moveHandler as EventListener, { passive: true });
-    mountContainer.addEventListener('mouseleave', resetTarget);
+    const pageMoveHandler = (e: MouseEvent) => {
+      lastPagePointer = {
+        clientX: e.clientX,
+        clientY: e.clientY
+      };
+    };
+    const resetTarget = () => {
+      lastPagePointer = null;
+      targetParallaxMouse = { x: 0, y: 0 };
+    };
+
+    if (TRACK_POINTER_ON_PAGE) {
+      window.addEventListener('mousemove', pageMoveHandler);
+      window.addEventListener('mouseleave', resetTarget);
+      window.addEventListener('blur', resetTarget);
+    } else {
+      mountContainer.addEventListener('mousemove', localMoveHandler as EventListener);
+      mountContainer.addEventListener('mouseleave', resetTarget);
+    }
+
+    mountContainer.addEventListener('touchmove', localMoveHandler as EventListener, { passive: true });
     mountContainer.addEventListener('touchend', resetTarget);
     
     scheduleNextBlink(performance.now());
     cleanupInteraction = () => {
-      mountContainer.removeEventListener('mousemove', moveHandler as EventListener);
-      mountContainer.removeEventListener('touchmove', moveHandler as EventListener);
-      mountContainer.removeEventListener('mouseleave', resetTarget);
+      if (TRACK_POINTER_ON_PAGE) {
+        window.removeEventListener('mousemove', pageMoveHandler);
+        window.removeEventListener('mouseleave', resetTarget);
+        window.removeEventListener('blur', resetTarget);
+      } else {
+        mountContainer.removeEventListener('mousemove', localMoveHandler as EventListener);
+      }
+
+      mountContainer.removeEventListener('touchmove', localMoveHandler as EventListener);
       mountContainer.removeEventListener('touchend', resetTarget);
     };
     render();

@@ -196,3 +196,19 @@
 ## Current Review
 - Added `isLoading` state to `ParallaxContainer` and now show a centered ring spinner overlay until both image sets finish preloading.
 - Kept the loader scoped to the component with its own overlay and keyframes so no global styling changes were required.
+
+## Current Plan
+- [x] Red: Add failing regression coverage for parallax pointer normalization and page-wide pointer tracking in `ParallaxContainer`.
+- [x] Green: Switch `ParallaxContainer` to an internal page-tracking toggle, keep local touch tracking, and clamp distant pointer vectors circularly.
+- [x] Refactor: Extract pointer normalization into a small helper shared by render-time tracking and tests.
+- [x] Verify with targeted parallax tests, `npm run build`, and note the existing unrelated `tests/app.spec.ts` failures if they remain.
+
+## Current TDD Log
+- Red: Added failing specs for circular pointer normalization and for `ParallaxContainer` listening to page-level mouse movement instead of only container-local movement.
+- Green: Switched mouse tracking behind an internal `TRACK_POINTER_ON_PAGE` constant, recomputed page-space targets from the live container rect each frame, and kept touch interaction local to the component.
+- Refactor: Moved the pointer normalization math into `src/components/article/parallaxPointer.ts`, reused it from both the component and focused unit tests, and tightened the test typing/build setup with Node types.
+
+## Current Review
+- `npx vitest run tests/viteConfig.spec.ts tests/parallaxPointer.spec.ts tests/parallaxContainer.spec.ts` passed.
+- `npm run build` passed after adding `@types/node`, updating `tsconfig.json`, and making the Vite config spec path resolution ESM-safe under the current toolchain.
+- `npm test` still fails in pre-existing `tests/app.spec.ts` because the suite expects `Color Harmony & Contrast` content and a `flex-grow: 3;` pane ratio that do not match the current app state; the new parallax and Vite-config tests pass.
