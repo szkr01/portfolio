@@ -240,6 +240,17 @@
 - The current mismatch appears local to the parallax pointer normalization contract: the test expects unit-circle clamping, while `src/components/article/ParallaxContainer.vue` currently clamps at `sqrt(2)` scale and contains a stray `Math.sqrt(2)` statement.
 
 ## Current Plan
+- [x] Inspect `MusicArticlePage.vue` and identify the exact shared DOM that can be wrapped without introducing playback logic.
+- [x] Extract the shared track layout/player chrome into a template-only Vue component with slots for track-specific content.
+- [x] Replace the duplicated markup in `MusicArticlePage.vue` with the new wrapper while preserving the current DOM/classes.
+- [x] Verify with a production build and record the result.
+
+## Current Review
+- Added `src/components/article/MusicTrackCard.vue` as a template-only wrapper for the repeated track section layout, shared player chrome, and shared control buttons.
+- Replaced the duplicated track markup in `src/content/articles/MusicArticlePage.vue` with `MusicTrackCard` slots so only track-specific art, copy, progress state visuals, and play-button color remain inline.
+- `npm run build` passed after the refactor, so the new component boundary is valid under `vue-tsc` and Vite production build.
+
+## Current Plan
 - [x] Reconfirm the current failing contract in `tests/parallaxContainer.spec.ts`.
 - [x] Align `ParallaxContainer` pointer normalization with the unit-circle clamp expected by the test.
 - [x] Verify with targeted parallax coverage and a full `npm test` run.
@@ -307,6 +318,25 @@
 ## Current Plan
 - [x] Red: Add failing coverage for scene-specific image motion settings so `music` can move more aggressively than `image-drift`.
 - [x] Green: Extend image scenes with optional motion overrides and apply faster, wider pan settings to the `music` jacket scene only.
+
+## Current Plan
+- [x] Record the user correction about the previous `slot`-heavy refactor and capture the lesson.
+- [x] Red: Add focused coverage for a prop-driven `MusicTrackCard` and tighten the `MusicArticlePage` assertions around the data-driven rendering contract.
+- [x] Green: Replace the current `slot`-based `MusicTrackCard` with a typed props API and move `MusicArticlePage` to a `tracks` array plus `v-for`.
+- [x] Refactor: Keep the exact visual output and dummy-player behavior unchanged while collapsing repeated class branching inside the component.
+- [x] Verify with targeted music specs, full `npm test`, and `npm run build`.
+
+## Current TDD Log
+- Red: Added `tests/musicTrackCard.spec.ts` for image/mock artwork variants, accent-specific player chrome, and prop-driven progress state, then tightened `tests/musicArticle.spec.ts` to assert the data-driven two-track render contract.
+- Green: Replaced the `slot`-heavy wrapper with a page-scoped `MusicTrackCard` props component and rewrote `MusicArticlePage.vue` around a typed `tracks` array rendered by `v-for`.
+- Refactor: Centralized accent-dependent classes inside `MusicTrackCard`, kept the dummy controls static, and exposed stable `data-testid` hooks only where the focused tests need to read dynamic progress styles.
+
+## Current Review
+- `MusicArticlePage.vue` now only owns article-level copy and a `tracks` data array; repeated track markup moved into `src/content/articles/MusicTrackCard.vue`.
+- `MusicTrackCard.vue` handles the two current artwork variants (`image` and `mock`), shared player chrome, accent color mapping, and progress positioning from props without introducing playback logic.
+- `npx vitest run tests/musicTrackCard.spec.ts tests/musicArticle.spec.ts` passed.
+- `npm test` passed with 14 files and 29 tests green.
+- `npm run build` passed and emitted the production bundle successfully.
 - [x] Refactor: Keep existing image-scene defaults unchanged for `image-drift` and other callers.
 - [x] Verify with targeted media/scene tests, full `npm test`, and `npm run build`.
 
