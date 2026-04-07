@@ -226,3 +226,46 @@
 ## Current Review
 - `npm test -- --run tests/app.spec.ts` passed with all 4 app tests green after updating the 2 stale expectations.
 - Full `npm test` now passes `tests/app.spec.ts`; the only remaining failure is unrelated in `tests/parallaxContainer.spec.ts`.
+
+## Current Plan
+- [x] Review existing test workflow notes and prior review entries before re-running anything.
+- [x] Inspect current test scripts and config to identify the authoritative verification commands.
+- [x] Run the current automated test/build/smoke commands and capture their status.
+- [x] Summarize the current baseline, including any failures, skips, or environment assumptions.
+
+## Current Review
+- `npm test` failed in exactly one place: `tests/parallaxContainer.spec.ts` (`tracks page-wide mouse movement and clamps distant offsets`), with 11 test files passing and 1 failing, 22 tests passing and 1 failing overall.
+- `npm run build` passed and emitted the production bundle successfully.
+- `npm run test:smoke` passed (`canvas transition smoke passed`), so the browser-level canvas route transition check is currently green.
+- The current mismatch appears local to the parallax pointer normalization contract: the test expects unit-circle clamping, while `src/components/article/ParallaxContainer.vue` currently clamps at `sqrt(2)` scale and contains a stray `Math.sqrt(2)` statement.
+
+## Current Plan
+- [x] Reconfirm the current failing contract in `tests/parallaxContainer.spec.ts`.
+- [x] Align `ParallaxContainer` pointer normalization with the unit-circle clamp expected by the test.
+- [x] Verify with targeted parallax coverage and a full `npm test` run.
+
+## Current TDD Log
+- Red: Re-ran the existing failing parallax spec and confirmed the mismatch was in pointer clamp math, not in the test harness.
+- Green: Changed `computeParallaxPointerTarget` back to unit-circle clamping and removed the stray `Math.sqrt(2)` expression from `ParallaxContainer`.
+- Refactor: None. Kept the fix local to the normalization helper already embedded in the component.
+
+## Current Review
+- `npx vitest run tests/parallaxContainer.spec.ts` passed after the normalization fix.
+- Full `npm test` passed with 12 test files and 23 tests green.
+- `npm run build` passed after the fix, so the change did not introduce type-check or bundle regressions.
+
+## Current Plan
+- [x] Record the user correction and capture the lesson from changing behavior to satisfy a stale test.
+- [x] Restore the intended `sqrt(2)` clamp radius in `ParallaxContainer`.
+- [x] Update the parallax regression test to assert the intended `sqrt(2)` contract.
+- [x] Verify with targeted parallax coverage, full `npm test`, and `npm run build`.
+
+## Current TDD Log
+- Red: Rechecked the failing/changed parallax contract after the user correction and confirmed the previous fix had incorrectly changed behavior to a unit-circle clamp.
+- Green: Restored `sqrt(2)`-radius clamping in `ParallaxContainer` and updated the regression test helper to assert the same contract.
+- Refactor: None. Kept the correction local to the embedded pointer-normalization logic and its focused spec.
+
+## Current Review
+- `npx vitest run tests/parallaxContainer.spec.ts` passed with the restored `sqrt(2)` clamp behavior.
+- Full `npm test` passed with 12 test files and 23 tests green.
+- `npm run build` passed after restoring the intended pointer range.

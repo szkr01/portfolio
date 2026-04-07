@@ -41,13 +41,13 @@ function computeExpectedTarget(clientX: number, clientY: number, rect: { left: n
   const rawY = ((clientY - rect.top) / rect.height - 0.5) * 2;
   const magnitude = Math.hypot(rawX, rawY);
 
-  if (magnitude <= 1) {
+  if (magnitude <= Math.sqrt(2)) {
     return { x: rawX, y: rawY };
   }
 
   return {
-    x: rawX / magnitude,
-    y: rawY / magnitude
+    x: (rawX / magnitude) * Math.sqrt(2),
+    y: (rawY / magnitude) * Math.sqrt(2)
   };
 }
 

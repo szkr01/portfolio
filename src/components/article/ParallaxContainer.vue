@@ -65,10 +65,10 @@ function computeParallaxPointerTarget(
   if (magnitude <= Math.sqrt(2)) {
     return { x: rawX, y: rawY };
   }
-Math.sqrt(2)
+
   return {
-    x: rawX / magnitude*Math.sqrt(2),
-    y: rawY / magnitude*Math.sqrt(2)
+    x: (rawX / magnitude) * Math.sqrt(2),
+    y: (rawY / magnitude) * Math.sqrt(2)
   };
 }
 
