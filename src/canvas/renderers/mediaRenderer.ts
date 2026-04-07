@@ -16,6 +16,8 @@ interface ImageDimensions {
 
 interface ImageMotionState {
   cropSize: number;
+  panDurationMs: number;
+  minTravelRatio: number;
   maxOffsetX: number;
   maxOffsetY: number;
   from: CropPoint;
@@ -57,13 +59,18 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
     };
   }
 
-  function chooseNextCropPoint(from: CropPoint, maxOffsetX: number, maxOffsetY: number): CropPoint {
+  function chooseNextCropPoint(
+    from: CropPoint,
+    maxOffsetX: number,
+    maxOffsetY: number,
+    minTravelRatio: number
+  ): CropPoint {
     const maxTravel = Math.hypot(maxOffsetX, maxOffsetY);
     if (maxTravel === 0) {
       return from;
     }
 
-    const minTravel = maxTravel * IMAGE_MIN_TRAVEL_RATIO;
+    const minTravel = maxTravel * minTravelRatio;
     let candidate = createRandomCropPoint(maxOffsetX, maxOffsetY);
     for (let attempt = 0; attempt < 12; attempt += 1) {
       if (Math.hypot(candidate.x - from.x, candidate.y - from.y) >= minTravel) {
@@ -74,18 +81,27 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
     return candidate;
   }
 
-  function initializeImageMotion(image: ImageDimensions): void {
-    const cropSize = Math.min(image.width, image.height) * IMAGE_CROP_SCALE;
+  function initializeImageMotion(scene: CanvasSceneDefinition, image: ImageDimensions): void {
+    const motion =
+      "motion" in scene.source && scene.source.motion
+        ? scene.source.motion
+        : undefined;
+    const cropScale = motion?.cropScale ?? IMAGE_CROP_SCALE;
+    const panDurationMs = motion?.panDurationMs ?? IMAGE_PAN_DURATION_MS;
+    const minTravelRatio = motion?.minTravelRatio ?? IMAGE_MIN_TRAVEL_RATIO;
+    const cropSize = Math.min(image.width, image.height) * cropScale;
     const maxOffsetX = Math.max(0, image.width - cropSize);
     const maxOffsetY = Math.max(0, image.height - cropSize);
     const from = createRandomCropPoint(maxOffsetX, maxOffsetY);
 
     imageMotion = {
       cropSize,
+      panDurationMs,
+      minTravelRatio,
       maxOffsetX,
       maxOffsetY,
       from,
-      to: chooseNextCropPoint(from, maxOffsetX, maxOffsetY),
+      to: chooseNextCropPoint(from, maxOffsetX, maxOffsetY, minTravelRatio),
       segmentStartedAtMs: 0
     };
   }
@@ -95,18 +111,19 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
       return;
     }
 
-    while (frame.pageTimeMs - imageMotion.segmentStartedAtMs >= IMAGE_PAN_DURATION_MS) {
+    while (frame.pageTimeMs - imageMotion.segmentStartedAtMs >= imageMotion.panDurationMs) {
       imageMotion.from = imageMotion.to;
       imageMotion.to = chooseNextCropPoint(
         imageMotion.from,
         imageMotion.maxOffsetX,
-        imageMotion.maxOffsetY
+        imageMotion.maxOffsetY,
+        imageMotion.minTravelRatio
       );
-      imageMotion.segmentStartedAtMs += IMAGE_PAN_DURATION_MS;
+      imageMotion.segmentStartedAtMs += imageMotion.panDurationMs;
     }
 
     const progress = clamp01(
-      (frame.pageTimeMs - imageMotion.segmentStartedAtMs) / IMAGE_PAN_DURATION_MS
+      (frame.pageTimeMs - imageMotion.segmentStartedAtMs) / imageMotion.panDurationMs
     );
     const easedProgress = easeInOutQuad(progress);
     const cropX = lerp(imageMotion.from.x, imageMotion.to.x, easedProgress);
@@ -132,7 +149,7 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
     image.src = "src" in scene.source ? scene.source.src : "";
     await image.decode();
     media = image;
-    initializeImageMotion(image);
+    initializeImageMotion(scene, image);
   }
 
   async function loadVideo(scene: CanvasSceneDefinition): Promise<void> {

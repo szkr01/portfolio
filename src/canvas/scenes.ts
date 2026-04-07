@@ -1,5 +1,6 @@
 import { articlePages } from "../content/articlePages";
 import imageDriftAsset from "../content/assets/articles/image-drift/testImage.jpg";
+import musicPoolJacketAsset from "../content/assets/articles/music/pool_jacket.jpg";
 import cloudFragmentShader from "../shaders/cloud.frag?raw";
 import flowFragmentShader from "../shaders/flow.frag?raw";
 import type { CanvasSceneDefinition } from "./types";
@@ -24,6 +25,23 @@ export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) =>
       themeMode: entry.themeMode,
       transitionId: "live-mix",
       source: { fragmentShader: flowFragmentShader }
+    };
+  }
+
+  if (entry.sceneId === "music") {
+    return {
+      id: entry.sceneId,
+      runtimeKey: "music",
+      kind: "image",
+      themeMode: entry.themeMode,
+      transitionId: "live-mix",
+      source: {
+        src: musicPoolJacketAsset,
+        motion: {
+          cropScale: 0.75,
+          panDurationMs: 8_000
+        }
+      }
     };
   }
 

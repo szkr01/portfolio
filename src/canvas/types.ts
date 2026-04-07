@@ -6,8 +6,15 @@ export interface ShaderSceneSource {
   fragmentShader: string;
 }
 
+export interface ImageSceneMotion {
+  cropScale?: number;
+  panDurationMs?: number;
+  minTravelRatio?: number;
+}
+
 export interface ImageSceneSource {
   src: string;
+  motion?: ImageSceneMotion;
 }
 
 export interface VideoSceneSource {

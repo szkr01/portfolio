@@ -2,6 +2,7 @@ import type { Component } from "vue";
 import AboutArticlePage from "./articles/AboutArticlePage.vue";
 import ContactArticlePage from "./articles/ContactArticlePage.vue";
 import ImageDriftArticlePage from "./articles/ImageDriftArticlePage.vue";
+import MusicArticlePage from "./articles/MusicArticlePage.vue";
 import WorksArticlePage from "./articles/WorksArticlePage.vue";
 
 export interface ArticlePageEntry {
@@ -34,6 +35,17 @@ export const articlePages: ArticlePageEntry[] = [
     sceneId: "works",
     themeMode: "dark",
     component: WorksArticlePage,
+    paneRatio: {
+      canvas: 1,
+      article: 1
+    }
+  },
+  {
+    slug: "music",
+    title: "Music",
+    sceneId: "music",
+    themeMode: "light",
+    component: MusicArticlePage,
     paneRatio: {
       canvas: 1,
       article: 1

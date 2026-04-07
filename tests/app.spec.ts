@@ -52,6 +52,7 @@ describe("App", () => {
 
     expect(wrapper.find('input[type="file"]').exists()).toBe(false);
     expect(wrapper.findAll("[data-article-link]").length).toBe(articlePages.length);
+    expect(wrapper.text()).toContain("Music");
     expect(wrapper.text()).toContain("About: szkr01");
   });
 
@@ -93,6 +94,26 @@ describe("App", () => {
 
     expect(wrapper.text()).toContain("Image Drift");
     expect(activate).toHaveBeenCalledWith("image-drift", "manual");
+  });
+
+  it("navigates to the music article from the tab registry", async () => {
+    activate.mockReset();
+    const router = createTestRouter();
+    await router.push(`/articles/${articlePages[0].slug}`);
+    await router.isReady();
+
+    const wrapper = mount(App, {
+      global: {
+        plugins: [router]
+      }
+    });
+    await nextTick();
+
+    await router.push("/articles/music");
+    await nextTick();
+
+    expect(wrapper.text()).toContain("Music");
+    expect(activate).toHaveBeenCalledWith("music", "manual");
   });
 
   it("applies the active article pane ratio to the canvas and article panes", async () => {

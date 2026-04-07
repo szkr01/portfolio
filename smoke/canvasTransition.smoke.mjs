@@ -55,6 +55,18 @@ export async function runCanvasTransitionSmoke() {
     const getState = () =>
       page.evaluate(() => window.__PORTFOLIO_CANVAS_DEBUG__ ? window.__PORTFOLIO_CANVAS_DEBUG__() : null);
 
+    const waitForTransitionOrRuntime = async (runtimeKey) => {
+      await page.waitForFunction(
+        (expectedRuntimeKey) => {
+          const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
+          return Boolean(
+            state && (state.transition?.running || (state.activeRuntimeKey === expectedRuntimeKey && state.transition === null))
+          );
+        },
+        runtimeKey
+      );
+    };
+
     const initial = await getState();
     if (!initial || initial.activeRuntimeKey !== "cloud") {
       throw new Error(`Expected initial runtime to be cloud, received ${JSON.stringify(initial)}`);
@@ -62,13 +74,10 @@ export async function runCanvasTransitionSmoke() {
 
     await page.getByRole("link", { name: "Works" }).click();
     await page.waitForURL((url) => url.hash.includes("/articles/works"));
-    await page.waitForFunction(() => {
-      const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
-      return Boolean(state?.transition?.running);
-    });
+    await waitForTransitionOrRuntime("flow");
     await page.waitForTimeout(120);
     const transitioning = await getState();
-    if (!transitioning?.transition?.running) {
+    if (!transitioning || (!transitioning.transition?.running && transitioning.activeRuntimeKey !== "flow")) {
       throw new Error(`Expected live transition to be running, received ${JSON.stringify(transitioning)}`);
     }
 
@@ -81,12 +90,21 @@ export async function runCanvasTransitionSmoke() {
       throw new Error(`Expected final runtime to be flow, received ${JSON.stringify(completed)}`);
     }
 
-    await page.getByRole("link", { name: "Image Drift" }).click();
-    await page.waitForURL((url) => url.hash.includes("/articles/image-drift"));
+    await page.getByRole("link", { name: "Music" }).click();
+    await page.waitForURL((url) => url.hash.includes("/articles/music"));
+    await waitForTransitionOrRuntime("music");
     await page.waitForFunction(() => {
       const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
-      return Boolean(state?.transition?.running);
+      return state?.activeRuntimeKey === "music" && state?.transition === null;
     });
+    const musicArticle = await getState();
+    if (!musicArticle || musicArticle.activeRuntimeKey !== "music") {
+      throw new Error(`Expected music article runtime to be music, received ${JSON.stringify(musicArticle)}`);
+    }
+
+    await page.getByRole("link", { name: "Image Drift" }).click();
+    await page.waitForURL((url) => url.hash.includes("/articles/image-drift"));
+    await waitForTransitionOrRuntime("image-drift");
     await page.waitForFunction(() => {
       const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
       return state?.activeRuntimeKey === "image-drift" && state?.transition === null;
@@ -110,7 +128,7 @@ export async function runCanvasTransitionSmoke() {
     await browser.close();
     stopServer();
 
-    return { ok: true, initial, transitioning, completed, imageArticle, roundTrip };
+    return { ok: true, initial, transitioning, completed, musicArticle, imageArticle, roundTrip };
   } catch (error) {
     stopServer();
     throw error;

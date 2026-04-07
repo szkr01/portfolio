@@ -258,6 +258,23 @@
 - [x] Record the user correction and capture the lesson from changing behavior to satisfy a stale test.
 - [x] Restore the intended `sqrt(2)` clamp radius in `ParallaxContainer`.
 - [x] Update the parallax regression test to assert the intended `sqrt(2)` contract.
+
+## Current Plan
+- [x] Red: Add failing coverage for a new `Music` article tab inserted after `Works`.
+- [x] Green: Add a minimal `Music` article page and keep the article/scene registries aligned.
+- [x] Refactor: Reuse the existing flow runtime for `music` without introducing new canvas behavior.
+- [x] Verify with targeted specs, full `npm test`, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Updated app and scene specs so the suite requires a `Music` tab/route after `Works` and shifts the image article assertions to the fourth slot.
+- Green: Added `MusicArticlePage`, inserted `music` into the shared article registry after `works`, and mapped its canvas scene to the existing `flow` shader runtime.
+- Refactor: Hardened the smoke script so route-transition verification accepts either an in-flight live transition or an already-completed runtime swap, avoiding false negatives on fast runs.
+
+## Current Review
+- `npm test -- --run tests/app.spec.ts tests/scenes.spec.ts tests/contentRegistry.spec.ts` passed with 3 files and 10 tests green.
+- `npm test` passed with 12 files and 25 tests green.
+- `npm run build` passed and emitted the production bundle successfully.
+- `npm run test:smoke` passed (`canvas transition smoke passed`) after making the smoke wait condition robust to fast transitions.
 - [x] Verify with targeted parallax coverage, full `npm test`, and `npm run build`.
 
 ## Current TDD Log
@@ -269,3 +286,36 @@
 - `npx vitest run tests/parallaxContainer.spec.ts` passed with the restored `sqrt(2)` clamp behavior.
 - Full `npm test` passed with 12 test files and 23 tests green.
 - `npm run build` passed after restoring the intended pointer range.
+
+## Current Plan
+- [x] Red: Add failing coverage for the `music` scene image contract and the `Pool` jacket image in `MusicArticlePage`.
+- [x] Green: Move `pool_jacket.jpg` into app assets, switch the `music` canvas scene to an image runtime, and replace the `Pool` mock artwork with the real image.
+- [x] Refactor: Keep the rest of the article layout and other scene contracts unchanged while updating smoke navigation through `music`.
+- [x] Verify with targeted specs, full `npm test`, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Updated `tests/scenes.spec.ts` so the `music` scene must be an image runtime keyed as `music`, and added `tests/musicArticle.spec.ts` to require a real `Pool` jacket image in the article markup.
+- Green: Copied `pool_jacket.jpg` into `src/content/assets/articles/music/`, rewired the `music` scene to `kind: "image"`, and replaced the `Pool` mock art in `MusicArticlePage.vue` with the imported image.
+- Refactor: Expanded the smoke flow to navigate `Works -> Music -> Image Drift`, while leaving the rest of the article layout and scene registry unchanged.
+
+## Current Review
+- `npx vitest run tests/scenes.spec.ts tests/musicArticle.spec.ts` passed with 2 files and 4 tests green.
+- `npm test` passed with 13 files and 26 tests green.
+- `npm run build` passed and emitted the new `pool_jacket` asset in the production bundle.
+- `npm run test:smoke` passed (`canvas transition smoke passed`) after asserting the `music` image runtime during route navigation.
+
+## Current Plan
+- [x] Red: Add failing coverage for scene-specific image motion settings so `music` can move more aggressively than `image-drift`.
+- [x] Green: Extend image scenes with optional motion overrides and apply faster, wider pan settings to the `music` jacket scene only.
+- [x] Refactor: Keep existing image-scene defaults unchanged for `image-drift` and other callers.
+- [x] Verify with targeted media/scene tests, full `npm test`, and `npm run build`.
+
+## Current TDD Log
+- Red: Added a failing `tests/mediaRenderer.spec.ts` case that requires scene-level image motion overrides to change crop size and pan timing for `music`.
+- Green: Extended `ImageSceneSource` with optional `motion` settings, taught `mediaRenderer` to honor them, and configured the `music` scene to use a wider crop window and faster pan.
+- Refactor: Kept the image renderer defaults intact so `image-drift` and existing tests still run on the original motion profile unless a scene opts in.
+
+## Current Review
+- `npx vitest run tests/mediaRenderer.spec.ts tests/scenes.spec.ts` passed with 2 files and 7 tests green.
+- `npm test` passed with 13 files and 27 tests green.
+- `npm run build` passed after the image motion override change.

@@ -125,4 +125,38 @@ describe("createMediaRenderer", () => {
     expect(afterResize?.[2]).toBe(20);
     expect(afterResize?.slice(5)).toEqual([0, 0, 400, 400]);
   });
+
+  it("uses scene-specific image motion settings when provided", async () => {
+    const drawImage = vi.fn();
+    const renderer = createMediaRenderer("image");
+    const canvas = document.createElement("canvas");
+    canvas.width = 500;
+    canvas.height = 500;
+    canvas.getContext = vi.fn(() => ({
+      clearRect: vi.fn(),
+      drawImage
+    })) as unknown as HTMLCanvasElement["getContext"];
+    vi.spyOn(Math, "random")
+      .mockReturnValueOnce(0.5)
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(1)
+      .mockReturnValueOnce(1);
+
+    renderer.mount(canvas);
+    await renderer.load({
+      id: "music",
+      runtimeKey: "music",
+      kind: "image",
+      source: {
+        src: "/pool-jacket.png",
+        motion: {
+          cropScale: 0.75,
+          panDurationMs: 8_000
+        }
+      }
+    } satisfies CanvasSceneDefinition);
+    renderer.render(createFrame(4_000));
+
+    expect(drawImage).toHaveBeenCalledWith(expect.any(MockImage), 300, 100, 600, 600, 0, 0, 500, 500);
+  });
 });

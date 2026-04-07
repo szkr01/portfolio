@@ -13,13 +13,24 @@ describe("canvas scenes", () => {
     });
   });
 
-  it("uses an image scene for the third article", () => {
+  it("uses the embedded flow shader for the third article", () => {
     const thirdScene = canvasScenes[2];
 
-    expect(thirdScene?.id).toBe("image-drift");
-    expect(thirdScene?.runtimeKey).toBe("image-drift");
+    expect(thirdScene?.id).toBe("music");
+    expect(thirdScene?.runtimeKey).toBe("music");
     expect(thirdScene?.kind).toBe("image");
     expect(thirdScene?.source).toMatchObject({
+      src: expect.stringContaining("pool_jacket")
+    });
+  });
+
+  it("uses an image scene for the fourth article", () => {
+    const fourthScene = canvasScenes[3];
+
+    expect(fourthScene?.id).toBe("image-drift");
+    expect(fourthScene?.runtimeKey).toBe("image-drift");
+    expect(fourthScene?.kind).toBe("image");
+    expect(fourthScene?.source).toMatchObject({
       src: expect.stringContaining("testImage")
     });
   });
