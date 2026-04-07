@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { audioManager } from "../../audio/audioManager";
 import ArticleHeading from "../../components/article/ArticleHeading.vue";
 
@@ -55,6 +55,7 @@ function formatTime(seconds: number) {
 
 const accentClasses = computed(() => accentClassMap[props.accent]);
 const isPlayable = computed(() => props.audioSrc !== null);
+const hasArtwork = computed(() => Boolean(props.artworkSrc));
 const isActive = computed(
   () => props.audioSrc !== null && audioManager.state.activeSrc === props.audioSrc
 );
@@ -80,6 +81,34 @@ const durationLabel = computed(() => {
 
   return props.durationLabel ?? "--:--";
 });
+const isArtworkModalOpen = ref(false);
+let previousBodyOverflow = "";
+
+function openArtworkModal() {
+  if (!hasArtwork.value) {
+    return;
+  }
+
+  isArtworkModalOpen.value = true;
+}
+
+function closeArtworkModal() {
+  isArtworkModalOpen.value = false;
+}
+
+function handleDocumentKeydown(event: KeyboardEvent) {
+  if (event.key === "Escape") {
+    closeArtworkModal();
+  }
+}
+
+function handleBackdropClick(event: MouseEvent) {
+  if (event.target !== event.currentTarget) {
+    return;
+  }
+
+  closeArtworkModal();
+}
 
 async function handleToggle() {
   if (!isPlayable.value) {
@@ -109,6 +138,31 @@ async function handleSeek(event: MouseEvent) {
   const ratio = (event.clientX - rect.left) / rect.width;
   await audioManager.seekTrack(props.audioSrc, ratio);
 }
+
+watch(isArtworkModalOpen, (isOpen) => {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  if (isOpen) {
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleDocumentKeydown);
+    return;
+  }
+
+  document.body.style.overflow = previousBodyOverflow;
+  document.removeEventListener("keydown", handleDocumentKeydown);
+});
+
+onBeforeUnmount(() => {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  document.body.style.overflow = previousBodyOverflow;
+  document.removeEventListener("keydown", handleDocumentKeydown);
+});
 </script>
 
 <template>
@@ -121,9 +175,9 @@ async function handleSeek(event: MouseEvent) {
       <button
         v-if="artworkSrc"
         type="button"
-        class="relative w-full shrink-0 overflow-hidden rounded-2xl border border-black/10 bg-black/5 aspect-[4/3] group md:w-56 md:aspect-square dark:border-white/5"
-        :disabled="!isPlayable"
-        @click="handleToggle"
+        data-testid="track-artwork-button"
+        class="relative w-full shrink-0 overflow-hidden border border-black/10 bg-black/5 aspect-[4/3] group md:w-56 md:aspect-square dark:border-white/5"
+        @click="openArtworkModal"
       >
         <img
           data-testid="track-artwork-image"
@@ -132,24 +186,18 @@ async function handleSeek(event: MouseEvent) {
           class="h-full w-full object-cover"
         >
         <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-          <span class="text-sm font-medium uppercase tracking-widest text-white">Play Track</span>
+          <span class="text-sm font-medium uppercase tracking-widest text-white">View Jacket</span>
         </div>
       </button>
 
-      <button
+      <div
         v-else
-        type="button"
         data-testid="track-artwork-placeholder"
         :class="[
           'relative flex w-full shrink-0 flex-col items-center justify-center overflow-hidden rounded-2xl border border-black/10 aspect-[4/3] group md:w-56 md:aspect-square dark:border-white/5',
           accentClasses.placeholderGradient
         ]"
-        :disabled="!isPlayable"
-        @click="handleToggle"
       >
-        <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-          <span class="text-sm font-medium uppercase tracking-widest text-white">Play Track</span>
-        </div>
         <div
           :class="[
             'flex h-16 w-16 items-center justify-center rounded-full border border-current opacity-30',
@@ -158,7 +206,7 @@ async function handleSeek(event: MouseEvent) {
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
         </div>
-      </button>
+      </div>
 
       <div class="flex w-full flex-1 flex-col">
         <div class="mb-6">
@@ -271,4 +319,31 @@ async function handleSeek(event: MouseEvent) {
       </div>
     </div>
   </section>
+
+  <Teleport to="body">
+    <div
+      v-if="isArtworkModalOpen && artworkSrc"
+      data-testid="jacket-viewer-modal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="`${title} jacket viewer`"
+    >
+      <div
+        data-testid="jacket-viewer-backdrop"
+        class="absolute inset-0 bg-black/80 backdrop-blur-md"
+        @click="handleBackdropClick"
+      ></div>
+      <div class="relative z-10 w-full max-w-5xl">
+        <div class="overflow-hidden border border-white/10 bg-black/40 shadow-2xl">
+          <img
+            data-testid="jacket-viewer-image"
+            :src="artworkSrc"
+            :alt="artworkAlt ?? `${title} artwork`"
+            class="max-h-[85vh] w-full object-contain"
+          >
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>

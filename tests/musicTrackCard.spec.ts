@@ -24,6 +24,7 @@ vi.mock("../src/audio/audioManager", () => ({
 
 describe("MusicTrackCard", () => {
   beforeEach(() => {
+    document.body.innerHTML = "";
     mockedAudioManager.managerState.activeSrc = "pool.mp3";
     mockedAudioManager.managerState.isPlaying = true;
     mockedAudioManager.managerState.currentTime = 84;
@@ -33,8 +34,9 @@ describe("MusicTrackCard", () => {
     mockedAudioManager.seekTrack.mockReset();
   });
 
-  it("renders live playback UI for the active playable track and routes controls to the audio manager", async () => {
+  it("opens a jacket viewer modal from the artwork without changing playback wiring", async () => {
     const wrapper = mount(MusicTrackCard, {
+      attachTo: document.body,
       props: {
         title: "Pool",
         genre: "Ambient",
@@ -54,6 +56,20 @@ describe("MusicTrackCard", () => {
     expect(wrapper.get('[data-testid="track-duration"]').text()).toBe("4:12");
     expect(wrapper.get('[data-testid="track-progress-fill"]').attributes("style")).toContain("width: 33.33333333333333%");
     expect(wrapper.find('[data-testid="track-pause-icon"]').exists()).toBe(true);
+    expect(document.body.querySelector('[data-testid="jacket-viewer-modal"]')).toBeNull();
+
+    await wrapper.get('[data-testid="track-artwork-button"]').trigger("click");
+
+    const modal = document.body.querySelector('[data-testid="jacket-viewer-modal"]');
+    const viewerImage = document.body.querySelector('[data-testid="jacket-viewer-image"]');
+
+    expect(modal).not.toBeNull();
+    expect(modal?.getAttribute("role")).toBe("dialog");
+    expect(modal?.getAttribute("aria-modal")).toBe("true");
+    expect(viewerImage?.getAttribute("src")).toContain("/pool_jacket.jpg");
+    expect(viewerImage?.getAttribute("alt")).toBe("Pool jacket");
+    expect(mockedAudioManager.toggleTrack).not.toHaveBeenCalled();
+    expect(document.body.style.overflow).toBe("hidden");
 
     await wrapper.get('[data-testid="track-play-toggle"]').trigger("click");
     expect(mockedAudioManager.toggleTrack).toHaveBeenCalledWith("pool.mp3");
@@ -73,10 +89,30 @@ describe("MusicTrackCard", () => {
 
     await progress.trigger("click", { clientX: 60 });
     expect(mockedAudioManager.seekTrack).toHaveBeenCalledWith("pool.mp3", 0.25);
+
+    const closeButton = document.body.querySelector('[data-testid="jacket-viewer-close"]') as HTMLElement | null;
+    closeButton?.click();
+    await wrapper.vm.$nextTick();
+    expect(document.body.querySelector('[data-testid="jacket-viewer-modal"]')).toBeNull();
+
+    await wrapper.get('[data-testid="track-artwork-button"]').trigger("click");
+    const backdrop = document.body.querySelector('[data-testid="jacket-viewer-backdrop"]') as HTMLElement | null;
+    backdrop?.click();
+    await wrapper.vm.$nextTick();
+    expect(document.body.querySelector('[data-testid="jacket-viewer-modal"]')).toBeNull();
+
+    await wrapper.get('[data-testid="track-artwork-button"]').trigger("click");
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await wrapper.vm.$nextTick();
+    expect(document.body.querySelector('[data-testid="jacket-viewer-modal"]')).toBeNull();
+    expect(document.body.style.overflow).toBe("");
+
+    wrapper.unmount();
   });
 
-  it("renders the internal placeholder artwork and disables playback controls when no audio source is available", async () => {
+  it("renders the internal placeholder artwork and keeps cards without artwork non-interactive", async () => {
     const wrapper = mount(MusicTrackCard, {
+      attachTo: document.body,
       props: {
         title: "Digital Drift",
         genre: "Electronica",
@@ -93,11 +129,15 @@ describe("MusicTrackCard", () => {
     expect(wrapper.get('[data-testid="track-duration"]').text()).toBe("2:58");
     expect(wrapper.get('[data-testid="track-play-toggle"]').attributes("disabled")).toBeDefined();
     expect(wrapper.get('[data-testid="track-progress-bar"]').attributes("aria-disabled")).toBe("true");
+    expect(wrapper.find('[data-testid="track-artwork-button"]').exists()).toBe(false);
 
     await wrapper.get('[data-testid="track-play-toggle"]').trigger("click");
     await wrapper.get('[data-testid="track-progress-bar"]').trigger("click", { clientX: 10 });
 
     expect(mockedAudioManager.toggleTrack).not.toHaveBeenCalled();
     expect(mockedAudioManager.seekTrack).not.toHaveBeenCalled();
+    expect(document.body.querySelector('[data-testid="jacket-viewer-modal"]')).toBeNull();
+
+    wrapper.unmount();
   });
 });

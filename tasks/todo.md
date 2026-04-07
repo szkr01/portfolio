@@ -366,3 +366,19 @@
 - `npm test` passed with 15 files and 32 tests green.
 - `npm run build` passed and emitted the bundled `pool.mp3` asset alongside the music article assets.
 - `npm run test:smoke` passed (`canvas transition smoke passed`).
+
+## Current Plan
+- [x] Red: Add focused `MusicTrackCard` coverage for jacket viewer modal open/close flows without changing playback wiring.
+- [x] Green: Make artwork clicks open a local modal viewer inside `MusicTrackCard.vue` while keeping play/pause and seek on the existing controls.
+- [x] Refactor: Keep no-artwork cards non-interactive and preserve the current props/audioManager interface.
+- [x] Verify with focused music specs, `npm test`, and `npm run build`.
+
+## Current TDD Log
+- Red: Replaced the artwork-click expectation in `tests/musicTrackCard.spec.ts` so jacket clicks must open a modal, stay independent from `audioManager.toggleTrack`, and close via button, backdrop, and `Escape`.
+- Green: Added local modal state, body scroll locking, and `Teleport`-based jacket viewer markup inside `MusicTrackCard.vue`, while leaving play/pause and seek on the existing player controls.
+- Refactor: Kept cards without `artworkSrc` as non-interactive placeholders and preserved the current `MusicArticlePage` props contract plus `audioManager` API unchanged.
+
+## Current Review
+- `npx vitest run tests/musicTrackCard.spec.ts tests/musicArticle.spec.ts` passed with 2 files and 3 tests green.
+- `npm test` passed with 15 files and 32 tests green.
+- `npm run build` passed and emitted the unchanged music assets plus the updated app bundle.

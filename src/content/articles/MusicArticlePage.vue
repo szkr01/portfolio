@@ -2,7 +2,7 @@
 import ArticleHeading from "../../components/article/ArticleHeading.vue";
 import ArticleText from "../../components/article/ArticleText.vue";
 import poolAudio from "../assets/articles/music/pool.mp3";
-import poolJacket from "../assets/articles/music/pool_jacket.jpg";
+import poolJacket from "../assets/articles/music/pool_jacket.png";
 import MusicTrackCard from "./MusicTrackCard.vue";
 </script>
 
