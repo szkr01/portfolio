@@ -349,3 +349,20 @@
 - `npx vitest run tests/mediaRenderer.spec.ts tests/scenes.spec.ts` passed with 2 files and 7 tests green.
 - `npm test` passed with 13 files and 27 tests green.
 - `npm run build` passed after the image motion override change.
+
+## Current Plan
+- [x] Red: Replace the music card mock-prop specs with `audioManager`-driven contracts and add a dedicated manager unit test.
+- [x] Green: Implement a singleton `audioManager`, wire `MusicTrackCard` to live playback state, and connect `Pool` via a real audio asset while leaving null sources non-playable.
+- [x] Refactor: Keep `MusicArticlePage` explicit, remove obsolete mock artwork/state props from `MusicTrackCard`, and internalize the fallback artwork UI.
+- [x] Verify with focused music/audio specs, `npm test`, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Replaced the old prop-driven dummy-player specs with manager-backed `MusicTrackCard` expectations, added a dedicated `audioManager` unit test with fake audio events, and tightened the article-page contract around explicit `audioSrc` wiring.
+- Green: Added `src/audio/audioManager.ts`, copied `pool.mp3` into `src/content/assets/articles/music/`, rewired `MusicTrackCard` to live playback state and seek handling, and updated `MusicArticlePage` to pass a real source only for `Pool`.
+- Refactor: Removed the old artwork/state mock props, kept the page-level two-card composition explicit, and moved the fallback artwork rendering inside `MusicTrackCard`.
+
+## Current Review
+- `npx vitest run tests/audioManager.spec.ts tests/musicTrackCard.spec.ts tests/musicArticle.spec.ts` passed with 3 files and 6 tests green.
+- `npm test` passed with 15 files and 32 tests green.
+- `npm run build` passed and emitted the bundled `pool.mp3` asset alongside the music article assets.
+- `npm run test:smoke` passed (`canvas transition smoke passed`).

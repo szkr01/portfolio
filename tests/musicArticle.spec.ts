@@ -1,20 +1,43 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
+import { defineComponent } from "vue";
+
+vi.mock("../src/content/articles/MusicTrackCard.vue", () => ({
+  default: defineComponent({
+    name: "MusicTrackCardStub",
+    props: {
+      title: { type: String, required: true },
+      audioSrc: { type: String, default: null },
+      artworkSrc: { type: String, default: undefined },
+      artworkAlt: { type: String, default: undefined }
+    },
+    template: `
+      <div
+        data-testid="music-track-card"
+        :data-title="title"
+        :data-audio-src="audioSrc ?? 'null'"
+        :data-artwork-src="artworkSrc ?? 'null'"
+        :data-artwork-alt="artworkAlt ?? 'null'"
+      >
+        {{ title }}
+      </div>
+    `
+  })
+}));
+
 import MusicArticlePage from "../src/content/articles/MusicArticlePage.vue";
 
 describe("MusicArticlePage", () => {
-  it("renders both tracks from the data-driven track list while keeping the Pool jacket image", () => {
+  it("renders the two explicit track cards with a real Pool source and a null second source", () => {
     const wrapper = mount(MusicArticlePage);
+    const cards = wrapper.findAll('[data-testid="music-track-card"]');
 
-    const poolJacket = wrapper.get('[data-testid="pool-jacket"]');
-    const headings = wrapper.findAll("h2");
-
-    expect(poolJacket.attributes("src")).toContain("pool_jacket");
-    expect(poolJacket.attributes("alt")).toBe("Pool jacket");
-    expect(headings).toHaveLength(2);
-    expect(headings[0]?.text()).toBe("Pool");
-    expect(headings[1]?.text()).toBe("Digital Drift");
-    expect(wrapper.text()).toContain("Ambient");
-    expect(wrapper.text()).toContain("Electronica");
+    expect(cards).toHaveLength(2);
+    expect(cards[0]?.attributes("data-title")).toBe("Pool");
+    expect(cards[0]?.attributes("data-audio-src")).toContain("pool.mp3");
+    expect(cards[0]?.attributes("data-artwork-src")).toContain("pool_jacket");
+    expect(cards[0]?.attributes("data-artwork-alt")).toBe("Pool jacket");
+    expect(cards[1]?.attributes("data-title")).toBe("Digital Drift");
+    expect(cards[1]?.attributes("data-audio-src")).toBe("null");
   });
 });
