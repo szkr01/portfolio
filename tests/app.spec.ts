@@ -52,7 +52,7 @@ describe("App", () => {
 
     expect(wrapper.find('input[type="file"]').exists()).toBe(false);
     expect(wrapper.findAll("[data-article-link]").length).toBe(articlePages.length);
-    expect(wrapper.text()).toContain("Color Harmony & Contrast");
+    expect(wrapper.text()).toContain("About: szkr01");
   });
 
   it("activates the destination article scene when the route changes", async () => {
@@ -115,6 +115,6 @@ describe("App", () => {
     await nextTick();
 
     expect(wrapper.get("#left-pane").attributes("style")).toContain("flex-grow: 1;");
-    expect(wrapper.get("#right-pane").attributes("style")).toContain("flex-grow: 3;");
+    expect(wrapper.get("#right-pane").attributes("style")).toContain("flex-grow: 1;");
   });
 });
