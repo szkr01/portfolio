@@ -49,6 +49,26 @@ npm run test:smoke
 
 2026-04-08 時点で、上記 3 コマンドはこのリポジトリで通過確認済みです。
 
+## GitHub Pages
+
+このリポジトリは GitHub Pages の project pages として公開する前提です。
+
+- 公開 URL: `https://szkr01.github.io/portfolio/`
+- routing: `createWebHashHistory()` を使っているため、Pages 用の 404 fallback は不要
+- Vite の `base` は `/portfolio/` に固定
+- `main` ブランチへの push で GitHub Actions から自動デプロイ
+
+### Required Setup
+
+1. GitHub repository の default branch を `main` にする
+2. GitHub repository の `Settings > Pages` で `Source` を `GitHub Actions` にする
+3. `main` に push すると `.github/workflows/deploy-pages.yml` が build と deploy を実行する
+
+### Notes For Renames
+
+- repository 名を変更した場合は、[vite.config.ts](/mnt/c/Users/korag/Documents/GitHub/portfolio/vite.config.ts) の `base` も同じ path に更新する必要があります。
+- 例: repo 名を `foo` に変えるなら `base: "/foo/"` に合わせます。
+
 ## Project Structure
 
 ```text
@@ -66,4 +86,4 @@ smoke/          browser-level smoke script
 
 - ルーティングは `createWebHashHistory()` を使っています。
 - メディアアセットはリポジトリに同梱されています。
-- README にはデプロイ手順は含めていません。
+- GitHub Pages は GitHub Actions 経由で公開する前提です。
