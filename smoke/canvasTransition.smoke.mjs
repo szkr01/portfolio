@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
+import { join, resolve } from "node:path";
 import process from "node:process";
 import { setTimeout as delay } from "node:timers/promises";
 import { chromium } from "@playwright/test";
@@ -19,14 +20,30 @@ async function waitForServer(url, timeoutMs = 20_000) {
   throw new Error(`Timed out waiting for ${url}`);
 }
 
+function findWorkspaceChromiumExecutable() {
+  const browsersRoot = resolve(process.cwd(), ".playwright-browsers");
+  if (!existsSync(browsersRoot)) {
+    return undefined;
+  }
+
+  const browserDir = readdirSync(browsersRoot, { withFileTypes: true })
+    .find((entry) => entry.isDirectory() && entry.name.startsWith("chromium-"));
+
+  if (!browserDir) {
+    return undefined;
+  }
+
+  const executablePath = join(browsersRoot, browserDir.name, "chrome-linux64", "chrome");
+  return existsSync(executablePath) ? executablePath : undefined;
+}
+
 export async function runCanvasTransitionSmoke() {
   const port = 4173;
   const host = "127.0.0.1";
-  const browserExecutableCandidates = [
-    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
-    "/home/korag/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
-    "/home/korag/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell"
-  ].filter(Boolean);
+  const executablePath =
+    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ??
+    findWorkspaceChromiumExecutable() ??
+    chromium.executablePath();
   const viteProcess = spawn(
     process.execPath,
     ["./node_modules/vite/bin/vite.js", "--host", host, "--port", String(port)],
@@ -44,8 +61,10 @@ export async function runCanvasTransitionSmoke() {
 
   try {
     await waitForServer(`http://${host}:${port}`);
-    const executablePath = browserExecutableCandidates.find((candidate) => existsSync(candidate));
-    const browser = await chromium.launch({ headless: true, executablePath });
+    const browser = await chromium.launch({
+      headless: true,
+      ...(executablePath ? { executablePath } : {})
+    });
     const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
 
     await page.goto(`http://${host}:${port}`, { waitUntil: "networkidle" });

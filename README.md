@@ -66,7 +66,7 @@ npm run test:smoke
 
 ### Notes For Renames
 
-- repository 名を変更した場合は、[vite.config.ts](/mnt/c/Users/korag/Documents/GitHub/portfolio/vite.config.ts) の `base` も同じ path に更新する必要があります。
+- repository 名を変更した場合は、`vite.config.ts` の `base` も同じ path に更新する必要があります。
 - 例: repo 名を `foo` に変えるなら `base: "/foo/"` に合わせます。
 
 ## Project Structure

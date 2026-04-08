@@ -1,16 +1,16 @@
 ## Current Plan
-- [x] Confirm the current router and build output assumptions for GitHub Pages project deployment.
-- [x] Add the missing Vite `base` setting for `/portfolio/` project pages output.
-- [x] Add a GitHub Actions Pages deployment workflow that builds `dist/` from `main`.
-- [x] Document the GitHub Pages setup and deployment requirements in the public README.
-- [x] Verify with `npm run build` and confirm the built asset paths are prefixed with `/portfolio/`.
+- [x] Identify tracked files that expose local usernames or absolute workstation paths.
+- [x] Remove absolute path references from public docs and smoke automation code.
+- [x] Add an automated regression test that blocks reintroducing leaked local paths.
+- [x] Verify unit tests, smoke tests, and repository-wide path scans all pass cleanly.
 
 ## Current TDD Log
-- Red: No runtime logic changed. The initial failure was deployment readiness: the production build emitted root-relative `/assets/...` paths that would break on `https://szkr01.github.io/portfolio/`, and there was no Pages workflow or deployment documentation.
-- Green: Added `base: "/portfolio/"` in Vite, created a GitHub Pages Actions workflow, and documented the required repository settings plus deployment behavior in `README.md`.
-- Refactor: Kept the existing hash-router setup unchanged so Pages compatibility comes only from the asset base path and workflow wiring.
+- Red: `README.md`, `tasks/todo.md`, and `smoke/canvasTransition.smoke.mjs` contained absolute paths with the local username, so the public repository would leak workstation details.
+- Green: Replaced public absolute path references with repo-safe text and removed the hardcoded Playwright cache path fallback from the smoke runner.
+- Refactor: Added a repository leak guard spec so future changes fail fast if absolute local paths or usernames are committed again.
 
 ## Current Review
-- Added [deploy-pages.yml](/mnt/c/Users/korag/Documents/GitHub/portfolio/.github/workflows/deploy-pages.yml) for GitHub Pages deployment from `main`.
-- Updated [vite.config.ts](/mnt/c/Users/korag/Documents/GitHub/portfolio/vite.config.ts) to emit `/portfolio/`-scoped asset URLs for project pages.
-- Updated [README.md](/mnt/c/Users/korag/Documents/GitHub/portfolio/README.md) with required GitHub Pages settings and deployment notes.
+- Sanitized public-facing docs so they no longer contain workstation-specific absolute paths.
+- Simplified the smoke runner to rely on `PLAYWRIGHT_CHROMIUM_EXECUTABLE` or Playwright's default browser resolution instead of hardcoded cache paths.
+- Added automated coverage to block local usernames and workstation-specific absolute path formats from reappearing in tracked docs or scripts.
+- Ignored `.playwright-browsers/` so local verification downloads stay outside tracked files.
