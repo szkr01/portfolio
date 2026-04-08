@@ -20,7 +20,7 @@ describe("canvas scenes", () => {
     expect(thirdScene?.runtimeKey).toBe("music");
     expect(thirdScene?.kind).toBe("shader");
     expect(thirdScene?.source).toMatchObject({
-      fragmentShader: expect.stringContaining("void mainImage(out vec4 O, in vec2 F)")
+      fragmentShader: expect.stringContaining("tanh(")
     });
   });
 

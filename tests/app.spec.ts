@@ -76,6 +76,22 @@ describe("App", () => {
     expect(activate).toHaveBeenCalledWith(articlePages[1].sceneId, "manual");
   });
 
+  it("activates the first article scene after the root redirect resolves", async () => {
+    activate.mockReset();
+    const router = createTestRouter();
+    await router.push("/");
+    await router.isReady();
+
+    mount(App, {
+      global: {
+        plugins: [router]
+      }
+    });
+    await nextTick();
+
+    expect(activate).toHaveBeenCalledWith(articlePages[0].sceneId, "init");
+  });
+
   it("navigates to the image article and activates its dedicated scene", async () => {
     activate.mockReset();
     const router = createTestRouter();

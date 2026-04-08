@@ -11,6 +11,7 @@ const { setCanvas, themeStyle, activate } = useCanvasController();
 const route = useRoute();
 const currentArticle = computed(() => route.meta.article as ArticlePageEntry | undefined);
 const activePaneRatio = computed(() => currentArticle.value?.paneRatio ?? { canvas: 1, article: 1 });
+let hasActivatedInitialScene = false;
 const canvasPaneStyle = computed<CSSProperties>(() => ({
   flexGrow: activePaneRatio.value.canvas,
   flexBasis: "0%",
@@ -23,19 +24,32 @@ const articlePaneStyle = computed<CSSProperties>(() => ({
 }));
 
 onMounted(async () => {
-  if (currentArticle.value) {
-    await activate(currentArticle.value.sceneId, "init");
+  if (!currentArticle.value) {
+    return;
   }
+
+  await activate(currentArticle.value.sceneId, "init");
+  hasActivatedInitialScene = true;
 });
 
 watch(
-  () => route.fullPath,
-  async (_nextPath, previousPath) => {
-    if (!previousPath || !currentArticle.value) {
+  () => currentArticle.value?.sceneId,
+  async (nextSceneId, previousSceneId) => {
+    if (!nextSceneId) {
       return;
     }
 
-    await activate(currentArticle.value.sceneId, "manual");
+    if (!hasActivatedInitialScene) {
+      await activate(nextSceneId, "init");
+      hasActivatedInitialScene = true;
+      return;
+    }
+
+    if (nextSceneId === previousSceneId) {
+      return;
+    }
+
+    await activate(nextSceneId, "manual");
   }
 );
 </script>

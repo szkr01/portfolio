@@ -411,3 +411,24 @@
 - `npx vitest run tests/musicTrackCard.spec.ts --reporter=verbose` passed after aligning the modal contract back to backdrop / `Escape` close only and removing the mistaken close-button expectation.
 - `npm test` passed with 15 files and 32 tests green.
 - `npm run build` passed and emitted the production bundle with the new `music` shader included.
+
+## Current Plan
+- [x] Red: Add focused coverage for `webgl2` context acquisition, GLSL300 shader wrappers, and a `tanh` marker in the dedicated `music` shader.
+- [x] Green: Migrate the shader and transition renderers plus transition fragment to `WebGL2 + GLSL ES 3.00` while keeping the `mainImage` scene contract.
+- [x] Refactor: Keep scene registration and controller APIs unchanged, and make unsupported environments fail explicitly instead of silently falling back to `webgl`.
+- [x] Verify with targeted renderer/scene tests, full `npm test`, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Added focused renderer specs that fail unless shader and transition canvases request `webgl2`, compile GLSL300 wrappers, and the dedicated `music` scene source contains `tanh(`.
+- Green: Migrated both canvas shader renderers to `WebGL2RenderingContext`, upgraded their wrappers to `#version 300 es`, rewrote the live transition fragment to `texture(...)` plus explicit fragment output, and updated `music.frag` to shape its final color with `tanh`.
+- Refactor: Kept scene shader authoring on the existing `mainImage(...)` contract, tightened unsupported-environment failure text to `WebGL2` explicitly, and fixed the app's first-route activation path so the smoke test still initializes the first canvas scene after the hash redirect.
+
+## Current Review
+- Added [shaderRenderer.spec.ts](/mnt/c/Users/korag/Documents/GitHub/portfolio/tests/shaderRenderer.spec.ts) and [transitionRenderer.spec.ts](/mnt/c/Users/korag/Documents/GitHub/portfolio/tests/transitionRenderer.spec.ts) to lock the `webgl2` request path and GLSL300 wrapper output.
+- Updated [shaderRenderer.ts](/mnt/c/Users/korag/Documents/GitHub/portfolio/src/canvas/renderers/shaderRenderer.ts), [transitionRenderer.ts](/mnt/c/Users/korag/Documents/GitHub/portfolio/src/canvas/renderers/transitionRenderer.ts), and [liveTransition.frag](/mnt/c/Users/korag/Documents/GitHub/portfolio/src/shaders/liveTransition.frag) so the canvas stack now runs on WebGL2 / GLSL ES 3.00 instead of the previous WebGL1 shader path.
+- Updated [music.frag](/mnt/c/Users/korag/Documents/GitHub/portfolio/src/shaders/music.frag) to use `tanh`, and [App.vue](/mnt/c/Users/korag/Documents/GitHub/portfolio/src/App.vue) plus [app.spec.ts](/mnt/c/Users/korag/Documents/GitHub/portfolio/tests/app.spec.ts) so the first article scene still activates after the root redirect.
+- `npx vitest run tests/shaderRenderer.spec.ts tests/transitionRenderer.spec.ts tests/scenes.spec.ts --reporter=verbose` passed.
+- `npx vitest run tests/app.spec.ts --reporter=verbose` passed.
+- `npm test` passed with 17 files and 35 tests green.
+- `npm run build` passed and emitted the production bundle successfully.
+- `npm run test:smoke` passed (`canvas transition smoke passed`).

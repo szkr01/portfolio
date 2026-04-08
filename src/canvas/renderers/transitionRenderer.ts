@@ -5,7 +5,7 @@ import type {
 } from "../types";
 
 interface TransitionProgramState {
-  gl: WebGLRenderingContext;
+  gl: WebGL2RenderingContext;
   program: WebGLProgram;
   resolutionUniform: WebGLUniformLocation | null;
   progressUniform: WebGLUniformLocation | null;
@@ -13,9 +13,9 @@ interface TransitionProgramState {
   toUniform: WebGLUniformLocation | null;
 }
 
-const vertexShaderSource = `
-attribute vec2 a_position;
-varying vec2 v_uv;
+const vertexShaderSource = `#version 300 es
+in vec2 a_position;
+out vec2 v_uv;
 void main() {
   v_uv = a_position * 0.5 + 0.5;
   gl_Position = vec4(a_position, 0.0, 1.0);
@@ -23,18 +23,18 @@ void main() {
 `;
 
 function wrapFragmentShader(fragmentShader: string): string {
-  return `
+  return `#version 300 es
 precision highp float;
 uniform sampler2D u_from;
 uniform sampler2D u_to;
 uniform float u_progress;
 uniform vec2 u_resolution;
-varying vec2 v_uv;
+in vec2 v_uv;
 ${fragmentShader}
 `;
 }
 
-function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader {
+function createShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader {
   const shader = gl.createShader(type);
   if (!shader) {
     throw new Error("Failed to create shader");
@@ -49,7 +49,7 @@ function createShader(gl: WebGLRenderingContext, type: number, source: string): 
   return shader;
 }
 
-function createProgram(gl: WebGLRenderingContext, fragmentShader: string): TransitionProgramState {
+function createProgram(gl: WebGL2RenderingContext, fragmentShader: string): TransitionProgramState {
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
   const pixelShader = createShader(gl, gl.FRAGMENT_SHADER, wrapFragmentShader(fragmentShader));
   const program = gl.createProgram();
@@ -93,7 +93,7 @@ function createProgram(gl: WebGLRenderingContext, fragmentShader: string): Trans
   };
 }
 
-function createTexture(gl: WebGLRenderingContext, unit: number, source: CanvasImageSource): void {
+function createTexture(gl: WebGL2RenderingContext, unit: number, source: CanvasImageSource): void {
   const texture = gl.createTexture();
   gl.activeTexture(gl.TEXTURE0 + unit);
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -118,7 +118,7 @@ export function createTransitionRenderer(): CanvasTransitionRenderer {
       if (!canvas) {
         return;
       }
-      const gl = canvas.getContext("webgl", {
+      const gl = canvas.getContext("webgl2", {
         alpha: false,
         antialias: true,
         preserveDrawingBuffer: true

@@ -72,7 +72,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   vec2 uv = fragCoord.xy / iResolution.xy;
   float vignette = 1.0 - smoothstep(0.5, 1.5, length(uv - 0.5) * 1.5);
   color *= vignette;
-  color = pow(max(color, 0.0), vec3(CONTRAST));
+  color = tanh(max(color, 0.0) * CONTRAST);
 
   fragColor = vec4(color, 1.0);
 }

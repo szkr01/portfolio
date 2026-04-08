@@ -1,35 +1,36 @@
 import type { CanvasRenderer, CanvasRenderFrame, CanvasSceneDefinition } from "../types";
 
 interface ShaderProgramState {
-  gl: WebGLRenderingContext;
+  gl: WebGL2RenderingContext;
   program: WebGLProgram;
   positionLocation: number;
   resolutionUniform: WebGLUniformLocation | null;
   timeUniform: WebGLUniformLocation | null;
 }
 
-const vertexShaderSource = `
-attribute vec2 a_position;
+const vertexShaderSource = `#version 300 es
+in vec2 a_position;
 void main() {
   gl_Position = vec4(a_position, 0.0, 1.0);
 }
 `;
 
 function wrapFragmentShader(fragmentShader: string): string {
-  return `
+  return `#version 300 es
 precision highp float;
 uniform vec3 iResolution;
 uniform float iTime;
+out vec4 outColor;
 ${fragmentShader}
 void main() {
   vec4 color = vec4(0.0);
   mainImage(color, gl_FragCoord.xy);
-  gl_FragColor = color;
+  outColor = color;
 }
 `;
 }
 
-function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader {
+function createShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader {
   const shader = gl.createShader(type);
   if (!shader) {
     throw new Error("Failed to create shader");
@@ -44,7 +45,7 @@ function createShader(gl: WebGLRenderingContext, type: number, source: string): 
   return shader;
 }
 
-function createProgram(gl: WebGLRenderingContext, fragmentShader: string): ShaderProgramState {
+function createProgram(gl: WebGL2RenderingContext, fragmentShader: string): ShaderProgramState {
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
   const pixelShader = createShader(gl, gl.FRAGMENT_SHADER, wrapFragmentShader(fragmentShader));
   const program = gl.createProgram();
@@ -104,13 +105,13 @@ export function createShaderRenderer(): CanvasRenderer {
         shaderState.gl.deleteProgram(shaderState.program);
         shaderState = null;
       }
-      const gl = canvas.getContext("webgl", {
+      const gl = canvas.getContext("webgl2", {
         alpha: false,
         antialias: true,
         preserveDrawingBuffer: true
       });
       if (!gl) {
-        throw new Error("WebGL is not supported in this environment");
+        throw new Error("WebGL2 is required for shader scenes");
       }
       gl.clearColor(0, 0, 0, 1);
       shaderState = createProgram(gl, (scene.source as { fragmentShader: string }).fragmentShader);
