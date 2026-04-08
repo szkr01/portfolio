@@ -13,14 +13,14 @@ describe("canvas scenes", () => {
     });
   });
 
-  it("uses the embedded flow shader for the third article", () => {
+  it("uses a dedicated music shader for the third article", () => {
     const thirdScene = canvasScenes[2];
 
     expect(thirdScene?.id).toBe("music");
     expect(thirdScene?.runtimeKey).toBe("music");
-    expect(thirdScene?.kind).toBe("image");
+    expect(thirdScene?.kind).toBe("shader");
     expect(thirdScene?.source).toMatchObject({
-      src: expect.stringContaining("pool_jacket")
+      fragmentShader: expect.stringContaining("void mainImage(out vec4 O, in vec2 F)")
     });
   });
 

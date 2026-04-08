@@ -1,8 +1,8 @@
 import { articlePages } from "../content/articlePages";
 import imageDriftAsset from "../content/assets/articles/image-drift/testImage.jpg";
-import musicPoolJacketAsset from "../content/assets/articles/music/pool_jacket.png";
 import cloudFragmentShader from "../shaders/cloud.frag?raw";
 import flowFragmentShader from "../shaders/flow.frag?raw";
+import musicFragmentShader from "../shaders/music.frag?raw";
 import type { CanvasSceneDefinition } from "./types";
 
 export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) => {
@@ -31,11 +31,11 @@ export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) =>
   if (entry.sceneId === "music") {
     return {
       id: entry.sceneId,
-      runtimeKey: "flow",
+      runtimeKey: "music",
       kind: "shader",
       themeMode: entry.themeMode,
       transitionId: "live-mix",
-      source: { fragmentShader: flowFragmentShader }
+      source: { fragmentShader: musicFragmentShader }
     };
   }
 

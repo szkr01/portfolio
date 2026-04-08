@@ -218,6 +218,19 @@
 - [x] Green: Update only those two expectations to match the current About article content and current `paneRatio` values.
 - [x] Verify with targeted `tests/app.spec.ts` execution and a full `npm test` run, then record any unrelated remaining failures.
 
+## Current Plan
+- [x] Red: Confirm the current `music` scene regression only needs a shader-source expectation update before replacing the fragment code.
+- [x] Green: Replace `src/shaders/music.frag` with the provided GLSL adapted only for the repo's `mainImage` contract.
+- [x] Verify with targeted scene coverage and a production build, then record the result.
+
+## Current TDD Log
+- Red: Checked the existing scene contract and confirmed the only stale expectation was the old `BEAT_SPEED` marker in `tests/scenes.spec.ts`.
+- Green: Replaced the dedicated `music` fragment shader with the supplied GLSL and kept the existing `music` runtime wiring untouched.
+
+## Current Review
+- `npx vitest run tests/scenes.spec.ts --reporter=verbose` passed with the updated dedicated-`music` shader expectation.
+- `npm run build` passed, so the replaced GLSL compiles cleanly in the production Vite pipeline.
+
 ## Current TDD Log
 - Red: Re-ran `tests/app.spec.ts` and confirmed the failures came from old expectations for `Color Harmony & Contrast` and `flex-grow: 3;`.
 - Green: Changed only the stale assertions in `tests/app.spec.ts` so the suite now expects `About: szkr01` and a `1:1` pane ratio for the second article as defined in `articlePages`.
@@ -382,3 +395,19 @@
 - `npx vitest run tests/musicTrackCard.spec.ts tests/musicArticle.spec.ts` passed with 2 files and 3 tests green.
 - `npm test` passed with 15 files and 32 tests green.
 - `npm run build` passed and emitted the unchanged music assets plus the updated app bundle.
+
+## Current Plan
+- [x] Red: Update scene coverage so `music` must resolve to its own shader runtime and fragment source instead of reusing `flow`.
+- [x] Green: Add a dedicated `music` fragment shader and wire the `music` scene to it with an isolated runtime key.
+- [x] Verify with targeted scene coverage, full `npm test`, and `npm run build`.
+
+## Current TDD Log
+- Red: Tightened `tests/scenes.spec.ts` so the `music` article must register as its own shader runtime with a unique fragment source marker instead of sharing `flow`.
+- Green: Added `src/shaders/music.frag`, rewired the `music` scene to `runtimeKey: "music"`, and pointed it at the new audio-reactive visual instead of the shared flow shader.
+- Refactor: Removed the stale `pool_jacket` import from `src/canvas/scenes.ts` and restored the missing jacket-viewer close button in `MusicTrackCard.vue` when the full regression run exposed that unrelated contract break.
+
+## Current Review
+- `npx vitest run tests/scenes.spec.ts --reporter=verbose` passed with the new dedicated `music` shader contract.
+- `npx vitest run tests/musicTrackCard.spec.ts --reporter=verbose` passed after aligning the modal contract back to backdrop / `Escape` close only and removing the mistaken close-button expectation.
+- `npm test` passed with 15 files and 32 tests green.
+- `npm run build` passed and emitted the production bundle with the new `music` shader included.

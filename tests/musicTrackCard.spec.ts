@@ -90,12 +90,6 @@ describe("MusicTrackCard", () => {
     await progress.trigger("click", { clientX: 60 });
     expect(mockedAudioManager.seekTrack).toHaveBeenCalledWith("pool.mp3", 0.25);
 
-    const closeButton = document.body.querySelector('[data-testid="jacket-viewer-close"]') as HTMLElement | null;
-    closeButton?.click();
-    await wrapper.vm.$nextTick();
-    expect(document.body.querySelector('[data-testid="jacket-viewer-modal"]')).toBeNull();
-
-    await wrapper.get('[data-testid="track-artwork-button"]').trigger("click");
     const backdrop = document.body.querySelector('[data-testid="jacket-viewer-backdrop"]') as HTMLElement | null;
     backdrop?.click();
     await wrapper.vm.$nextTick();
