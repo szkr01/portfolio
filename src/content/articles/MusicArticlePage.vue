@@ -13,29 +13,20 @@ import MusicTrackCard from "./MusicTrackCard.vue";
         Music
       </ArticleHeading>
       <ArticleText class="mt-4 theme-muted">
-        個人的に制作している楽曲やサウンドスケープ。
+        個人的に制作している楽曲。
       </ArticleText>
     </header>
 
     <MusicTrackCard
       title="Pool"
-      genre="Ambient"
-      date-label="2026.04"
-      description="作曲サークルで毎週行われている、「DTM研究会」で制作したトラック。硬い空気感と水中のようなドロップ。"
+      genre="Electro BPM180"
+      date-label="2026.03"
+      description="所属の作曲サークルで制作したトラック。硬いタイルと水中のような質感。"
       accent="indigo"
       :audio-src="poolAudio"
-      duration-label="4:12"
+      duration-label="1:47"
       :artwork-src="poolJacket"
       artwork-alt="Pool jacket"
-    />
-    <MusicTrackCard
-      title="Digital Drift"
-      genre="Electronica"
-      date-label="2025.11"
-      description="グリッチノイズとタイトなビートをベースにしたエレクトロニカ・トラック。ランダムに生成されるエフェクトと堅牢なベースラインの対比を楽しめるように構成しました。"
-      accent="emerald"
-      :audio-src="null"
-      duration-label="2:58"
     />
   </article>
 </template>
