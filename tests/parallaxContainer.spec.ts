@@ -2,6 +2,14 @@ import { mount } from "@vue/test-utils";
 import { nextTick } from "vue";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ParallaxContainer from "../src/components/article/ParallaxContainer.vue";
+import layer01 from "../src/content/assets/parallax/layer-01.png";
+import layer02 from "../src/content/assets/parallax/layer-02.png";
+import layer03 from "../src/content/assets/parallax/layer-03.png";
+import layer04 from "../src/content/assets/parallax/layer-04.png";
+import layer05 from "../src/content/assets/parallax/layer-05.png";
+import layer051 from "../src/content/assets/parallax/layer-05-1.png";
+import layer06 from "../src/content/assets/parallax/layer-06.png";
+import layer061 from "../src/content/assets/parallax/layer-06-1.png";
 
 type FrameCallback = (time: number) => void;
 
@@ -10,6 +18,7 @@ const clearRect = vi.fn();
 const requestAnimationFrameMock = vi.fn<(callback: FrameCallback) => number>();
 const cancelAnimationFrameMock = vi.fn();
 const queuedFrames: FrameCallback[] = [];
+const assignedImageSources: string[] = [];
 
 class MockImage {
   public onload: null | (() => void) = null;
@@ -17,7 +26,8 @@ class MockImage {
   public naturalWidth = 768;
   public naturalHeight = 768;
 
-  set src(_value: string) {
+  set src(value: string) {
+    assignedImageSources.push(value);
     queueMicrotask(() => {
       this.onload?.();
     });
@@ -54,6 +64,7 @@ function computeExpectedTarget(clientX: number, clientY: number, rect: { left: n
 describe("ParallaxContainer", () => {
   beforeEach(() => {
     queuedFrames.length = 0;
+    assignedImageSources.length = 0;
     drawImage.mockReset();
     clearRect.mockReset();
     requestAnimationFrameMock.mockReset();
@@ -120,6 +131,33 @@ describe("ParallaxContainer", () => {
     expect(lastDrawCall).toBeDefined();
     expect(lastDrawCall?.[1]).toBeCloseTo(expectedTarget.x * 15 * 0.08, 2);
     expect(lastDrawCall?.[2]).toBeCloseTo(expectedTarget.y * 15 * 0.08, 2);
+
+    await wrapper.unmount();
+  });
+
+  it("loads parallax layers from Vite-resolved asset URLs", async () => {
+    const wrapper = mount(ParallaxContainer, {
+      attachTo: document.body
+    });
+
+    await flushMicrotasks();
+    await nextTick();
+
+    expect(assignedImageSources).toEqual([
+      layer01,
+      layer02,
+      layer03,
+      layer04,
+      layer05,
+      layer06,
+      layer01,
+      layer02,
+      layer03,
+      layer04,
+      layer051,
+      layer061
+    ]);
+    expect(assignedImageSources).not.toContain("src/content/assets/parallax/layer-01.png");
 
     await wrapper.unmount();
   });

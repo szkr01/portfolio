@@ -1,16 +1,14 @@
 ## Current Plan
-- [x] Identify tracked files that expose local usernames or absolute workstation paths.
-- [x] Remove absolute path references from public docs and smoke automation code.
-- [x] Add an automated regression test that blocks reintroducing leaked local paths.
-- [x] Verify unit tests, smoke tests, and repository-wide path scans all pass cleanly.
+- [x] Reproduce the GitHub Pages parallax asset 404 failure mode in an automated regression test.
+- [x] Replace raw `src/content/assets/parallax/...` strings with Vite-resolved asset imports in the parallax component.
+- [x] Verify targeted tests, full unit tests, and production build output all pass without raw parallax source paths in `dist`.
 
 ## Current TDD Log
-- Red: `README.md`, `tasks/todo.md`, and `smoke/canvasTransition.smoke.mjs` contained absolute paths with the local username, so the public repository would leak workstation details.
-- Green: Replaced public absolute path references with repo-safe text and removed the hardcoded Playwright cache path fallback from the smoke runner.
-- Refactor: Added a repository leak guard spec so future changes fail fast if absolute local paths or usernames are committed again.
+- Red: `ParallaxContainer.vue` loads parallax layers from raw `src/content/assets/parallax/...` strings, so the Vite production build leaves those URLs untouched and GitHub Pages returns 404.
+- Green: Switch the layer source arrays to imported asset URLs so Vite emits hashed files into `dist/assets` and the component loads deployable URLs.
+- Refactor: Keep the existing parallax rendering logic intact and add a regression test that fails if raw source-path URLs are assigned to `Image.src` again.
 
 ## Current Review
-- Sanitized public-facing docs so they no longer contain workstation-specific absolute paths.
-- Simplified the smoke runner to rely on `PLAYWRIGHT_CHROMIUM_EXECUTABLE` or Playwright's default browser resolution instead of hardcoded cache paths.
-- Added automated coverage to block local usernames and workstation-specific absolute path formats from reappearing in tracked docs or scripts.
-- Ignored `.playwright-browsers/` so local verification downloads stay outside tracked files.
+- Added regression coverage for the parallax layer source resolution path.
+- Updated the parallax component to use Vite-managed asset imports instead of raw repository-relative strings.
+- Verified the fix through `npm test -- tests/parallaxContainer.spec.ts`, `npm test`, `npm run build`, and a `dist` scan confirming `src/content/assets/parallax` no longer appears in build output.

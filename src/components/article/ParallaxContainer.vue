@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref, onBeforeUnmount } from 'vue';
+import layer01 from '../../content/assets/parallax/layer-01.png';
+import layer02 from '../../content/assets/parallax/layer-02.png';
+import layer03 from '../../content/assets/parallax/layer-03.png';
+import layer04 from '../../content/assets/parallax/layer-04.png';
+import layer05 from '../../content/assets/parallax/layer-05.png';
+import layer051 from '../../content/assets/parallax/layer-05-1.png';
+import layer06 from '../../content/assets/parallax/layer-06.png';
+import layer061 from '../../content/assets/parallax/layer-06-1.png';
 
 interface Props {
   intensity?: number;
@@ -26,21 +34,21 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const layerSources: string[] = [
-  'src/content/assets/parallax/layer-01.png',
-  'src/content/assets/parallax/layer-02.png',
-  'src/content/assets/parallax/layer-03.png',
-  'src/content/assets/parallax/layer-04.png',
-  'src/content/assets/parallax/layer-05.png',
-  'src/content/assets/parallax/layer-06.png'
+  layer01,
+  layer02,
+  layer03,
+  layer04,
+  layer05,
+  layer06
 ];
 
-const altlayerSources: string[] = [
-  'src/content/assets/parallax/layer-01.png',
-  'src/content/assets/parallax/layer-02.png',
-  'src/content/assets/parallax/layer-03.png',
-  'src/content/assets/parallax/layer-04.png',
-  'src/content/assets/parallax/layer-05-1.png',
-  'src/content/assets/parallax/layer-06-1.png'
+const altLayerSources: string[] = [
+  layer01,
+  layer02,
+  layer03,
+  layer04,
+  layer051,
+  layer061
 ];
 
 const BLINK_DURATION_MIN_MS = 120;
@@ -122,7 +130,7 @@ onMounted(() => {
 
   function render() {
     animationFrameId = requestAnimationFrame(render);
-    if (layersLoaded < layerSources.length || blinkLayersLoaded < altlayerSources.length) return;
+    if (layersLoaded < layerSources.length || blinkLayersLoaded < altLayerSources.length) return;
 
     if (TRACK_POINTER_ON_PAGE) {
       updateTargetFromPagePointer();
@@ -207,7 +215,7 @@ onMounted(() => {
   }
 
   function maybeStart() {
-    if (layersLoaded === layerSources.length && blinkLayersLoaded === altlayerSources.length) {
+    if (layersLoaded === layerSources.length && blinkLayersLoaded === altLayerSources.length) {
       onAssetsLoaded();
     }
   }
@@ -224,8 +232,8 @@ onMounted(() => {
     layersLoaded = 0;
   }
 
-  if (altlayerSources.length > 0) {
-    altlayerSources.forEach(src => {
+  if (altLayerSources.length > 0) {
+    altLayerSources.forEach(src => {
       const img = new Image();
       img.onload = () => { blinkLayersLoaded += 1; maybeStart(); };
       img.onerror = () => { blinkLayersLoaded += 1; maybeStart(); };
@@ -236,7 +244,7 @@ onMounted(() => {
     blinkLayersLoaded = 0;
   }
 
-  if (layerSources.length === 0 && altlayerSources.length === 0) {
+  if (layerSources.length === 0 && altLayerSources.length === 0) {
     onAssetsLoaded();
   }
 });
