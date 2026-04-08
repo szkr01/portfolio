@@ -3,15 +3,11 @@ import { articlePages } from "../src/content/articlePages";
 import { canvasScenes } from "../src/canvas/scenes";
 
 describe("image article integration", () => {
-  it("registers the image-drift article and scene with aligned ids", () => {
+  it("keeps the image-drift scene registered after the routed article is removed", () => {
     const article = articlePages.find((entry) => entry.slug === "image-drift");
     const scene = canvasScenes.find((entry) => entry.id === "image-drift");
 
-    expect(article).toMatchObject({
-      slug: "image-drift",
-      title: "Image Drift",
-      sceneId: "image-drift"
-    });
+    expect(article).toBeUndefined();
     expect(scene).toMatchObject({
       id: "image-drift",
       runtimeKey: "image-drift",

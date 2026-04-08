@@ -3,7 +3,7 @@ import { canvasScenes } from "../src/canvas/scenes";
 
 describe("canvas scenes", () => {
   it("uses the embedded flow shader for the second article", () => {
-    const secondScene = canvasScenes[1];
+    const secondScene = canvasScenes.find((entry) => entry.id === "works");
 
     expect(secondScene?.id).toBe("works");
     expect(secondScene?.runtimeKey).toBe("flow");
@@ -14,18 +14,18 @@ describe("canvas scenes", () => {
   });
 
   it("uses a dedicated music shader for the third article", () => {
-    const thirdScene = canvasScenes[2];
+    const thirdScene = canvasScenes.find((entry) => entry.id === "music");
 
     expect(thirdScene?.id).toBe("music");
     expect(thirdScene?.runtimeKey).toBe("music");
     expect(thirdScene?.kind).toBe("shader");
     expect(thirdScene?.source).toMatchObject({
-      fragmentShader: expect.stringContaining("tanh(")
+      fragmentShader: expect.stringContaining("const vec3 BASE_COLOR")
     });
   });
 
   it("uses an image scene for the fourth article", () => {
-    const fourthScene = canvasScenes[3];
+    const fourthScene = canvasScenes.find((entry) => entry.id === "image-drift");
 
     expect(fourthScene?.id).toBe("image-drift");
     expect(fourthScene?.runtimeKey).toBe("image-drift");

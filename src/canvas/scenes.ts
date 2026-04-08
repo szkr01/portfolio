@@ -1,50 +1,48 @@
-import { articlePages } from "../content/articlePages";
 import imageDriftAsset from "../content/assets/articles/image-drift/testImage.jpg";
 import cloudFragmentShader from "../shaders/cloud.frag?raw";
 import flowFragmentShader from "../shaders/flow.frag?raw";
 import musicFragmentShader from "../shaders/music.frag?raw";
 import type { CanvasSceneDefinition } from "./types";
 
-export const canvasScenes: CanvasSceneDefinition[] = articlePages.map((entry) => {
-  if (entry.sceneId === "About") {
-    return {
-      id: entry.sceneId,
-      runtimeKey: "cloud",
-      kind: "shader",
-      themeMode: entry.themeMode,
-      transitionId: "live-mix",
-      source: { fragmentShader: cloudFragmentShader }
-    };
-  }
-
-  if (entry.sceneId === "works") {
-    return {
-      id: entry.sceneId,
-      runtimeKey: "flow",
-      kind: "shader",
-      themeMode: entry.themeMode,
-      transitionId: "live-mix",
-      source: { fragmentShader: flowFragmentShader }
-    };
-  }
-
-  if (entry.sceneId === "music") {
-    return {
-      id: entry.sceneId,
-      runtimeKey: "music",
-      kind: "shader",
-      themeMode: entry.themeMode,
-      transitionId: "live-mix",
-      source: { fragmentShader: musicFragmentShader }
-    };
-  }
-
-  return {
-    id: entry.sceneId,
+export const canvasScenes: CanvasSceneDefinition[] = [
+  {
+    id: "About",
+    runtimeKey: "cloud",
+    kind: "shader",
+    themeMode: "light",
+    transitionId: "live-mix",
+    source: { fragmentShader: cloudFragmentShader }
+  },
+  {
+    id: "works",
+    runtimeKey: "flow",
+    kind: "shader",
+    themeMode: "dark",
+    transitionId: "live-mix",
+    source: { fragmentShader: flowFragmentShader }
+  },
+  {
+    id: "music",
+    runtimeKey: "music",
+    kind: "shader",
+    themeMode: "light",
+    transitionId: "live-mix",
+    source: { fragmentShader: musicFragmentShader }
+  },
+  {
+    id: "contact",
     runtimeKey: "image-drift",
     kind: "image",
-    themeMode: entry.themeMode,
+    themeMode: "light",
     transitionId: "live-mix",
     source: { src: imageDriftAsset }
-  };
-});
+  },
+  {
+    id: "image-drift",
+    runtimeKey: "image-drift",
+    kind: "image",
+    themeMode: "light",
+    transitionId: "live-mix",
+    source: { src: imageDriftAsset }
+  }
+];

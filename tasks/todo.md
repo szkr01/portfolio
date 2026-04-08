@@ -448,3 +448,20 @@
 - `npx vitest run tests/musicArticle.spec.ts tests/musicTrackCard.spec.ts --reporter=verbose` passed with 2 files and 3 tests green.
 - `npm run build` passed after the component move and produced the production bundle successfully.
 - Direct diff between the deleted old path and new shared path showed only the `ArticleHeading` import changed, so the move stayed a rename-style relocation rather than a behavior change.
+
+## Current Plan
+- [x] Red: Update app, registry, and image-article coverage so `Image Drift` is absent from routed articles while `image-drift` remains a registered canvas scene.
+- [x] Green: Remove the `Image Drift` article page and article registry entry, and decouple `canvasScenes` from `articlePages` so the hidden image scene stays registered.
+- [x] Refactor: Trim smoke navigation to the remaining routed articles without changing any other runtime mapping.
+- [x] Verify with focused registry/app specs, `npm run build`, and `npm run test:smoke`.
+
+## Current TDD Log
+- Red: Updated the app, registry, and image-article specs so `Image Drift` must disappear from routed content while `image-drift` remains present in `canvasScenes`, then confirmed the old article-backed registry shape failed those expectations.
+- Green: Removed `ImageDriftArticlePage.vue` plus the `image-drift` article entry, rewrote `src/canvas/scenes.ts` as an explicit scene list, and preserved both the hidden `image-drift` scene and the current `contact -> image-drift` runtime mapping.
+- Refactor: Switched the scene spec to resolve by scene id instead of array position, which keeps the hidden-scene contract stable even if routed article order changes again.
+
+## Current Review
+- `npx vitest run tests/app.spec.ts tests/contentRegistry.spec.ts tests/imageArticle.spec.ts tests/scenes.spec.ts --reporter=verbose` passed with 4 files and 12 tests green.
+- `npm test` passed with 17 files and 35 tests green, so the hidden-scene change did not break existing controller, renderer, or article tests.
+- `npm run build` passed and still emitted the preserved `testImage` asset for the hidden `image-drift` scene.
+- `npm run test:smoke` passed after removing the `Image Drift` route hop from the browser navigation flow.

@@ -92,7 +92,7 @@ describe("App", () => {
     expect(activate).toHaveBeenCalledWith(articlePages[0].sceneId, "init");
   });
 
-  it("navigates to the image article and activates its dedicated scene", async () => {
+  it("does not expose the removed image article in navigation", async () => {
     activate.mockReset();
     const router = createTestRouter();
     await router.push(`/articles/${articlePages[0].slug}`);
@@ -105,11 +105,8 @@ describe("App", () => {
     });
     await nextTick();
 
-    await router.push("/articles/image-drift");
-    await nextTick();
-
-    expect(wrapper.text()).toContain("Image Drift");
-    expect(activate).toHaveBeenCalledWith("image-drift", "manual");
+    expect(wrapper.text()).not.toContain("Image Drift");
+    expect(articlePages.some((entry) => entry.slug === "image-drift")).toBe(false);
   });
 
   it("navigates to the music article from the tab registry", async () => {
