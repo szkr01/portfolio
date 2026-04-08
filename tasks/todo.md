@@ -432,3 +432,19 @@
 - `npm test` passed with 17 files and 35 tests green.
 - `npm run build` passed and emitted the production bundle successfully.
 - `npm run test:smoke` passed (`canvas transition smoke passed`).
+
+## Current Plan
+- [x] Red: Reconfirm the `music` page contract is stale in test, then update it to the current single-track page before moving the component path.
+- [x] Green: Move `MusicTrackCard.vue` into `src/components/article/` and repoint page/spec imports to the shared article-components path.
+- [x] Refactor: Keep the component name and prop contract unchanged so the move stays structural.
+- [x] Verify with focused music specs, inspect the diff to confirm a rename-style move, and record the result.
+
+## Current TDD Log
+- Red: Re-ran `tests/musicArticle.spec.ts` and confirmed it still expected two cards, while the current `MusicArticlePage.vue` renders only the explicit `Pool` card.
+- Green: Moved `MusicTrackCard.vue` into `src/components/article/`, updated `MusicArticlePage.vue` plus both music specs to import/mock the new shared path, and aligned the page spec with the current one-card contract.
+- Refactor: Kept `MusicTrackCard` behavior intact and limited source changes to import-path updates plus the stale test expectation fix.
+
+## Current Review
+- `npx vitest run tests/musicArticle.spec.ts tests/musicTrackCard.spec.ts --reporter=verbose` passed with 2 files and 3 tests green.
+- `npm run build` passed after the component move and produced the production bundle successfully.
+- Direct diff between the deleted old path and new shared path showed only the `ArticleHeading` import changed, so the move stayed a rename-style relocation rather than a behavior change.

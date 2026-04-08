@@ -3,7 +3,7 @@ import ArticleHeading from "../../components/article/ArticleHeading.vue";
 import ArticleText from "../../components/article/ArticleText.vue";
 import poolAudio from "../assets/articles/music/pool.mp3";
 import poolJacket from "../assets/articles/music/pool_jacket.png";
-import MusicTrackCard from "./MusicTrackCard.vue";
+import MusicTrackCard from "../../components/article/MusicTrackCard.vue";
 </script>
 
 <template>
@@ -19,7 +19,7 @@ import MusicTrackCard from "./MusicTrackCard.vue";
 
     <MusicTrackCard
       title="Pool"
-      genre="Electro BPM180"
+      genre="Electro BPM178"
       date-label="2026.03"
       description="所属の作曲サークルで制作したトラック。硬いタイルと水中のような質感。"
       accent="indigo"

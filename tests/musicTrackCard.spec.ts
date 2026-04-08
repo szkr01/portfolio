@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
-import MusicTrackCard from "../src/content/articles/MusicTrackCard.vue";
+import MusicTrackCard from "../src/components/article/MusicTrackCard.vue";
 
 const mockedAudioManager = vi.hoisted(() => ({
   managerState: {

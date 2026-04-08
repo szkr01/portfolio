@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { audioManager } from "../../audio/audioManager";
-import ArticleHeading from "../../components/article/ArticleHeading.vue";
+import ArticleHeading from "./ArticleHeading.vue";
 
 type Accent = "indigo" | "emerald";
 
