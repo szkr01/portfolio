@@ -3,23 +3,23 @@
 
 const vec3 COLOR_1 = vec3(0.05098039, 0.05098039, 0.2509804);
 const vec3 COLOR_2 = vec3(0.10196079, 0.6, 0.6509804);
-const vec3 COLOR_3 = vec3(1.0, 0.9019608, 0.7019608);
+const vec3 COLOR_3 = vec3(1.0, 0.902, 0.702);
 const vec3 COLOR_4 = vec3(0.2, 0.4, 0.8);
 
 const float ZOOM = 1.0;
 const float SPEED = 0.15;
-const float BRIGHTNESS = 9.0;
+const float BRIGHTNESS = 10.0;
 const float CONTRAST = 4.5;
 
 const float FBM_AMP = 0.49;
-const float FBM_GAIN = 0.8;
-const float FBM_LACUNARITY = 2.0;
-const float CURL_STRENGTH = 1.0;
+const float FBM_GAIN = 0.72;
+const float FBM_LACUNARITY = 2.1;
+const float CURL_STRENGTH = 4.0;
 
 #define OCTAVES 6
 
 float random(in vec2 st) {
-  return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+  return fract(sin(dot(st.xy, vec2(13.9898, 78.233))) * 43758.5453123);
 }
 
 float noise(in vec2 st) {

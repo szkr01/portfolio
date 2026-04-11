@@ -11,8 +11,7 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
         <span class="theme-accent color-transition">Projects</span>
       </ArticleHeading>
       <p class="theme-muted color-transition text-lg leading-relaxed mt-4">
-        画像表現、検索、ランタイム実装、音楽周辺のツールを中心に制作しています。<br />
-        表現だけでなく、内部構造やインタラクションの設計も含めて作ることが多いです。
+        思いついたものは、その都度かたちにしています。公開しているものは非常に少数で、共有可能なものの中から特に面白い、わかりやすいものをピックアップしています。すべてのコードはリンクからgithub経由で閲覧することができます。
       </p>
     </header>
 
@@ -138,10 +137,6 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
         <li>
           <strong><ArticleLink href="https://github.com/szkr01/myJVM">myJVM</ArticleLink></strong>
           - Javaのクラスファイルを読み取り、簡易的なバイトコード解釈でmainメソッドを実行する小さなJVMインタプリタ実装。
-        </li>
-        <li>
-          <strong><ArticleLink>LostCode</ArticleLink></strong>
-          - コンソール版マインクラフトMOD。物理エンジンを実装し、アイテムに剛体挙動を適用。アセンブリ直書き実装。
         </li>
       </ul>
     </section>
