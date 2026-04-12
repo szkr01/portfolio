@@ -74,6 +74,24 @@ export async function runCanvasTransitionSmoke() {
     const getState = () =>
       page.evaluate(() => window.__PORTFOLIO_CANVAS_DEBUG__ ? window.__PORTFOLIO_CANVAS_DEBUG__() : null);
 
+    const getArticleWidthMetrics = () =>
+      page.evaluate(() => {
+        const articlePane = document.querySelector("#right-pane");
+        const articleInner = document.querySelector(".article-pane__inner");
+        if (!(articlePane instanceof HTMLElement) || !(articleInner instanceof HTMLElement)) {
+          return null;
+        }
+
+        const paneRect = articlePane.getBoundingClientRect();
+        const innerRect = articleInner.getBoundingClientRect();
+
+        return {
+          paneWidth: paneRect.width,
+          innerWidth: innerRect.width,
+          marginRatio: (paneRect.width - innerRect.width) / paneRect.width
+        };
+      });
+
     const waitForTransitionOrRuntime = async (runtimeKey) => {
       await page.waitForFunction(
         (expectedRuntimeKey) => {
@@ -130,6 +148,39 @@ export async function runCanvasTransitionSmoke() {
     const roundTrip = await getState();
     if (!roundTrip || roundTrip.activeRuntimeKey !== "cloud") {
       throw new Error(`Expected round-trip runtime to be cloud, received ${JSON.stringify(roundTrip)}`);
+    }
+
+    await page.setViewportSize({ width: 2560, height: 1440 });
+    await page.waitForTimeout(150);
+    const wqhdArticleMetrics = await getArticleWidthMetrics();
+    if (!wqhdArticleMetrics) {
+      throw new Error("Expected WQHD article metrics to be available");
+    }
+
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.waitForTimeout(150);
+    const fhdArticleMetrics = await getArticleWidthMetrics();
+    if (!fhdArticleMetrics) {
+      throw new Error("Expected FHD article metrics to be available");
+    }
+
+    if (Math.abs(wqhdArticleMetrics.marginRatio - fhdArticleMetrics.marginRatio) > 0.02) {
+      throw new Error(
+        `Expected FHD article margin ratio to match WQHD, received ${JSON.stringify({ wqhdArticleMetrics, fhdArticleMetrics })}`
+      );
+    }
+
+    await page.setViewportSize({ width: 1600, height: 1000 });
+    await page.waitForTimeout(150);
+    const narrowDesktopArticleMetrics = await getArticleWidthMetrics();
+    if (!narrowDesktopArticleMetrics) {
+      throw new Error("Expected narrow desktop article metrics to be available");
+    }
+
+    if (Math.abs(narrowDesktopArticleMetrics.innerWidth - 504) > 4) {
+      throw new Error(
+        `Expected narrow desktop article width floor to stay near 31.5rem, received ${JSON.stringify(narrowDesktopArticleMetrics)}`
+      );
     }
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -229,7 +280,19 @@ export async function runCanvasTransitionSmoke() {
     await browser.close();
     stopServer();
 
-    return { ok: true, initial, transitioning, completed, musicArticle, roundTrip, mobileLayout, contactCanvasCoverage };
+    return {
+      ok: true,
+      initial,
+      transitioning,
+      completed,
+      musicArticle,
+      roundTrip,
+      wqhdArticleMetrics,
+      fhdArticleMetrics,
+      narrowDesktopArticleMetrics,
+      mobileLayout,
+      contactCanvasCoverage
+    };
   } catch (error) {
     stopServer();
     throw error;

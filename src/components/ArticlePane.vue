@@ -16,7 +16,7 @@ const route = useRoute();
     class="article-pane theme-bg color-transition min-w-0 overflow-y-auto px-5 py-8 md:px-12 md:py-16"
     :style="paneStyle"
   >
-    <div class="mx-auto max-w-2xl">
+    <div class="article-pane__inner mx-auto">
       <nav class="theme-border mb-12 flex flex-wrap gap-3 border-b pb-4">
         <RouterLink
           v-for="entry in articlePages"

@@ -11,12 +11,18 @@ const { setCanvas, themeStyle, activate } = useCanvasController();
 const route = useRoute();
 const currentArticle = computed(() => route.meta.article as ArticlePageEntry | undefined);
 const activePaneRatio = computed(() => currentArticle.value?.paneRatio ?? { canvas: 1, article: 1 });
+const activeArticlePaneShare = computed(() => {
+  const { canvas, article } = activePaneRatio.value;
+  const total = canvas + article;
+  return total > 0 ? article / total : 0.5;
+});
 let hasActivatedInitialScene = false;
 const canvasPaneStyle = computed<CSSProperties>(() => ({
   "--pane-grow": String(activePaneRatio.value.canvas)
 }));
 const articlePaneStyle = computed<CSSProperties>(() => ({
-  "--pane-grow": String(activePaneRatio.value.article)
+  "--pane-grow": String(activePaneRatio.value.article),
+  "--article-pane-share": String(activeArticlePaneShare.value)
 }));
 
 onMounted(async () => {

@@ -51,6 +51,11 @@ body {
   height: 100%;
 }
 
+.article-pane__inner {
+  width: 100%;
+  max-width: 42rem;
+}
+
 .theme-bg {
   background-color: var(--bg);
 }
@@ -117,6 +122,12 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
+}
+
+@media (min-width: 768px) {
+  .article-pane__inner {
+    max-inline-size: clamp(31.5rem, calc(54vw * var(--article-pane-share, 0.5)), 42rem);
+  }
 }
 
 @media (max-width: 767px) {

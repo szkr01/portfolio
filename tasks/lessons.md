@@ -15,3 +15,4 @@
 - ユーザーが「ページを消す」と「scene は残す」を切り分けたら、route/nav 用 registry と canvas scene registry を同一視しない。article 削除時は公開 UI と内部 scene を別レイヤーで扱う。
 - 公開リポジトリ向けの README、`tasks/`、smoke script、CI 補助コードには、ローカルの絶対パスやユーザー名を埋め込まない。外部参照は repo-relative な表現か設定可能な環境変数で表す。
 - モバイルで canvas 比率を変えた後の image scene は、レイアウトの縦積み確認だけで完了扱いにしない。`drawImage` の destination rect と実ブラウザの端ピクセル描画を両方確認して、未描画の空白帯が残っていないことまで固定する。
+- ユーザーが「余白が広すぎる / 狭すぎる」と視覚的な微調整を返してきたら、上限や下限を触る前に中間の補間係数だけを動かして差分を最小化する。
