@@ -59,7 +59,7 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
       <ArticleHeading :level="2" accent bordered>Graphics / Interactive</ArticleHeading>
       <ul class="list-disc pl-6 mt-4 space-y-2 theme-text color-transition leading-relaxed">
         <li>
-          <strong><ArticleLink href="./#/articles/works">BlueFlow</ArticleLink></strong>
+          <strong><ArticleLink href="https://github.com/szkr01/portfolio/blob/main/src/shaders/flow.frag">BlueFlow</ArticleLink></strong>
           - 左側のシーン。FBMを利用した流体のようなテクスチャ。GLSLフラグメントシェーダーで実装。
         </li>
         <li>
@@ -68,11 +68,11 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
         </li>
         <li>
           <strong><ArticleLink href="https://github.com/szkr01/glassView">GlassView</ArticleLink></strong>
-          - リアルタイム動画サンプリングを用いて、抽象的なガラス屈折エフェクトを適用するアプリ。
+          - レイトレーシングを用いて、抽象的なガラス屈折エフェクトを適用するアプリ。
         </li>
         <li>
           <strong><ArticleLink href="https://szkr01.github.io/PQR-ts/">PQR-ts</ArticleLink></strong>
-          - 音楽の歌詞に合わせて動くQRコード。
+          - 動くQRコード。
         </li>
         <li>
           <strong><ArticleLink href="https://github.com/szkr01/DOPE_ABLETON_MOD">DOPE ABLETON MOD</ArticleLink></strong>
@@ -91,7 +91,7 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
         </li>
         <li>
           <strong><ArticleLink href="https://editor.p5js.org/szkr01/sketches/Hha8Fp1vf">circle-wave</ArticleLink></strong>
-          - パーフェクトループを試したスケッチ。
+          - パーフェクトループの基本的なスケッチ。
         </li>
         <li>
           <strong><ArticleLink href="https://editor.p5js.org/szkr01/sketches/EP3LLSLIo">Maclaurin expansion</ArticleLink></strong>
@@ -137,6 +137,14 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
         <li>
           <strong><ArticleLink href="https://github.com/szkr01/myJVM">myJVM</ArticleLink></strong>
           - Javaのクラスファイルを読み取り、簡易的なバイトコード解釈でmainメソッドを実行する小さなJVMインタプリタ実装。
+        </li>
+        <li>
+          <strong><ArticleLink href="https://github.com/szkr01/pwaUserScript">PWA Wrapper APK Generator</ArticleLink></strong>
+          - Android上でPWAアプリ上でUserScriptを実行するためのスクリプト群。
+        </li>
+        <li>
+          <strong><ArticleLink href="https://github.com/szkr01/connection_logger">connection_logger</ArticleLink></strong>
+          - wininet.dllをオーバーライドし、windowsアプリケーションのTCP/UDP通信をログに取るためのプログラム。
         </li>
       </ul>
     </section>

@@ -14,7 +14,7 @@ import ArticleText from "../../components/article/ArticleText.vue";
 
     <section>
       <ArticleText class="mb-4">
-        You can find my projects and contact me via GitHub:
+        ご質問やお仕事のご依頼などがある場合は、GitHubからご連絡いただけると幸いです。
       </ArticleText>
       <ArticleText>
         <ArticleLink href="https://github.com/szkr01/">GitHub - szkr01</ArticleLink>

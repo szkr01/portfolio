@@ -21,7 +21,7 @@ import MusicTrackCard from "../../components/article/MusicTrackCard.vue";
       title="Pool"
       genre="Electro BPM178"
       date-label="2026.03"
-      description="所属の作曲サークルで制作したトラック。硬いタイルと水中のような質感。"
+      description="所属の作曲サークルで制作したトラック。リミナルスペースのプールをイメージし、無限に広がる硬いタイルと水中のような質感を表現しました。"
       accent="indigo"
       :audio-src="poolAudio"
       duration-label="1:47"
