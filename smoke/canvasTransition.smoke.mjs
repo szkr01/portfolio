@@ -132,10 +132,67 @@ export async function runCanvasTransitionSmoke() {
       throw new Error(`Expected round-trip runtime to be cloud, received ${JSON.stringify(roundTrip)}`);
     }
 
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(150);
+
+    const mobileLayout = await page.evaluate(() => {
+      const canvasPane = document.querySelector("#left-pane");
+      const articlePane = document.querySelector("#right-pane");
+      if (!(canvasPane instanceof HTMLElement) || !(articlePane instanceof HTMLElement)) {
+        return null;
+      }
+
+      const canvasRect = canvasPane.getBoundingClientRect();
+      const articleRect = articlePane.getBoundingClientRect();
+      const rootStyle = window.getComputedStyle(document.querySelector(".app-shell"));
+      const canvasStyle = window.getComputedStyle(canvasPane);
+      const articleStyle = window.getComputedStyle(articlePane);
+
+      return {
+        rootDirection: rootStyle.flexDirection,
+        canvasTop: canvasRect.top,
+        canvasBottom: canvasRect.bottom,
+        canvasHeight: canvasRect.height,
+        articleTop: articleRect.top,
+        articleHeight: articleRect.height,
+        viewportHeight: window.innerHeight,
+        canvasBorderBottomWidth: canvasStyle.borderBottomWidth,
+        articleOverflowY: articleStyle.overflowY
+      };
+    });
+
+    if (!mobileLayout) {
+      throw new Error("Expected mobile layout metrics to be available");
+    }
+
+    if (mobileLayout.rootDirection !== "column") {
+      throw new Error(`Expected mobile layout to stack vertically, received ${JSON.stringify(mobileLayout)}`);
+    }
+
+    if (Math.abs(mobileLayout.canvasHeight - mobileLayout.viewportHeight * 0.18) > 3) {
+      throw new Error(`Expected mobile canvas height to be about 18svh, received ${JSON.stringify(mobileLayout)}`);
+    }
+
+    if (mobileLayout.articleTop < mobileLayout.canvasBottom - 1) {
+      throw new Error(`Expected article pane to render below the canvas, received ${JSON.stringify(mobileLayout)}`);
+    }
+
+    if (mobileLayout.articleHeight <= mobileLayout.canvasHeight) {
+      throw new Error(`Expected article pane to remain dominant on mobile, received ${JSON.stringify(mobileLayout)}`);
+    }
+
+    if (mobileLayout.canvasBorderBottomWidth === "0px") {
+      throw new Error(`Expected mobile canvas pane to switch to a bottom border, received ${JSON.stringify(mobileLayout)}`);
+    }
+
+    if (mobileLayout.articleOverflowY !== "auto") {
+      throw new Error(`Expected article pane to stay scrollable, received ${JSON.stringify(mobileLayout)}`);
+    }
+
     await browser.close();
     stopServer();
 
-    return { ok: true, initial, transitioning, completed, musicArticle, roundTrip };
+    return { ok: true, initial, transitioning, completed, musicArticle, roundTrip, mobileLayout };
   } catch (error) {
     stopServer();
     throw error;

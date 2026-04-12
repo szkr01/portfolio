@@ -13,14 +13,10 @@ const currentArticle = computed(() => route.meta.article as ArticlePageEntry | u
 const activePaneRatio = computed(() => currentArticle.value?.paneRatio ?? { canvas: 1, article: 1 });
 let hasActivatedInitialScene = false;
 const canvasPaneStyle = computed<CSSProperties>(() => ({
-  flexGrow: activePaneRatio.value.canvas,
-  flexBasis: "0%",
-  transition: "flex-grow 1000ms cubic-bezier(0.22, 1, 0.36, 1)"
+  "--pane-grow": String(activePaneRatio.value.canvas)
 }));
 const articlePaneStyle = computed<CSSProperties>(() => ({
-  flexGrow: activePaneRatio.value.article,
-  flexBasis: "0%",
-  transition: "flex-grow 1000ms cubic-bezier(0.22, 1, 0.36, 1)"
+  "--pane-grow": String(activePaneRatio.value.article)
 }));
 
 onMounted(async () => {
@@ -56,7 +52,7 @@ watch(
 
 <template>
   <main
-    class="color-transition flex h-screen w-screen overflow-hidden font-sans antialiased"
+    class="app-shell color-transition font-sans antialiased"
     :style="themeStyle"
   >
     <CanvasPane :set-canvas="setCanvas" :pane-style="canvasPaneStyle" />

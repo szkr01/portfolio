@@ -142,13 +142,31 @@ describe("App", () => {
     });
     await nextTick();
 
-    expect(wrapper.get("#left-pane").attributes("style")).toContain("flex-grow: 1;");
-    expect(wrapper.get("#right-pane").attributes("style")).toContain("flex-grow: 1;");
+    expect(wrapper.get("#left-pane").attributes("style")).toContain("--pane-grow: 1;");
+    expect(wrapper.get("#right-pane").attributes("style")).toContain("--pane-grow: 1;");
 
     await router.push(`/articles/${articlePages[1].slug}`);
     await nextTick();
 
-    expect(wrapper.get("#left-pane").attributes("style")).toContain("flex-grow: 1;");
-    expect(wrapper.get("#right-pane").attributes("style")).toContain("flex-grow: 1;");
+    expect(wrapper.get("#left-pane").attributes("style")).toContain("--pane-grow: 1;");
+    expect(wrapper.get("#right-pane").attributes("style")).toContain("--pane-grow: 1;");
+  });
+
+  it("renders stable layout hooks for responsive canvas and article panes", async () => {
+    activate.mockReset();
+    const router = createTestRouter();
+    await router.push(`/articles/${articlePages[0].slug}`);
+    await router.isReady();
+
+    const wrapper = mount(App, {
+      global: {
+        plugins: [router]
+      }
+    });
+    await nextTick();
+
+    expect(wrapper.get("main").classes()).toContain("app-shell");
+    expect(wrapper.get("#left-pane").classes()).toContain("canvas-pane");
+    expect(wrapper.get("#right-pane").classes()).toContain("article-pane");
   });
 });

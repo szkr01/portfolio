@@ -10,7 +10,7 @@ defineProps<{
 <template>
   <div
     id="left-pane"
-    class="canvas-container color-transition theme-border relative flex h-full min-w-0 items-center justify-center overflow-hidden border-r"
+    class="canvas-pane canvas-container color-transition theme-border relative flex min-w-0 items-center justify-center overflow-hidden"
     :style="paneStyle"
   >
     <canvas

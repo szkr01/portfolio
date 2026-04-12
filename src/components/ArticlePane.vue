@@ -13,7 +13,7 @@ const route = useRoute();
 <template>
   <div
     id="right-pane"
-    class="theme-bg color-transition h-full min-w-0 overflow-y-auto px-12 py-16"
+    class="article-pane theme-bg color-transition min-w-0 overflow-y-auto px-5 py-8 md:px-12 md:py-16"
     :style="paneStyle"
   >
     <div class="mx-auto max-w-2xl">
