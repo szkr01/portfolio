@@ -159,4 +159,32 @@ describe("createMediaRenderer", () => {
 
     expect(drawImage).toHaveBeenCalledWith(expect.any(MockImage), 300, 100, 600, 600, 0, 0, 500, 500);
   });
+
+  it("fills horizontal canvases by centering the square image draw vertically", async () => {
+    const drawImage = vi.fn();
+    const renderer = createMediaRenderer("image");
+    const canvas = document.createElement("canvas");
+    canvas.width = 500;
+    canvas.height = 320;
+    canvas.getContext = vi.fn(() => ({
+      clearRect: vi.fn(),
+      drawImage
+    })) as unknown as HTMLCanvasElement["getContext"];
+    vi.spyOn(Math, "random")
+      .mockReturnValueOnce(0.5)
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(1)
+      .mockReturnValueOnce(1);
+
+    renderer.mount(canvas);
+    await renderer.load({
+      id: "contact",
+      runtimeKey: "image-drift",
+      kind: "image",
+      source: { src: "/test-image.png" }
+    } satisfies CanvasSceneDefinition);
+    renderer.render(createFrame(0));
+
+    expect(drawImage).toHaveBeenCalledWith(expect.any(MockImage), 120, 0, 760, 760, 0, -90, 500, 500);
+  });
 });

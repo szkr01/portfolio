@@ -189,10 +189,47 @@ export async function runCanvasTransitionSmoke() {
       throw new Error(`Expected article pane to stay scrollable, received ${JSON.stringify(mobileLayout)}`);
     }
 
+    await page.getByRole("link", { name: "Contact" }).click();
+    await page.waitForURL((url) => url.hash.includes("/articles/contact"));
+    await page.waitForFunction(() => {
+      const state = window.__PORTFOLIO_CANVAS_DEBUG__?.();
+      return state?.activeRuntimeKey === "image-drift" && state?.transition === null;
+    });
+
+    const contactCanvasCoverage = await page.evaluate(() => {
+      const canvas = document.querySelector("#main-canvas");
+      if (!(canvas instanceof HTMLCanvasElement)) {
+        return null;
+      }
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!context) {
+        return null;
+      }
+      const sampleX = Math.max(0, canvas.width - 4);
+      const sampleY = Math.floor(canvas.height / 2);
+      const pixel = context.getImageData(sampleX, sampleY, 1, 1).data;
+
+      return {
+        width: canvas.width,
+        height: canvas.height,
+        sampleX,
+        sampleY,
+        alpha: pixel[3]
+      };
+    });
+
+    if (!contactCanvasCoverage) {
+      throw new Error("Expected contact canvas coverage metrics to be available");
+    }
+
+    if (contactCanvasCoverage.alpha === 0) {
+      throw new Error(`Expected contact canvas right edge to be painted, received ${JSON.stringify(contactCanvasCoverage)}`);
+    }
+
     await browser.close();
     stopServer();
 
-    return { ok: true, initial, transitioning, completed, musicArticle, roundTrip, mobileLayout };
+    return { ok: true, initial, transitioning, completed, musicArticle, roundTrip, mobileLayout, contactCanvasCoverage };
   } catch (error) {
     stopServer();
     throw error;

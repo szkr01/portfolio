@@ -25,6 +25,12 @@ interface ImageMotionState {
   segmentStartedAtMs: number;
 }
 
+interface DestinationRect {
+  x: number;
+  y: number;
+  size: number;
+}
+
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
 }
@@ -106,6 +112,22 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
     };
   }
 
+  function getImageDestinationRect(targetCanvas: HTMLCanvasElement): DestinationRect {
+    if (targetCanvas.width > targetCanvas.height) {
+      return {
+        x: 0,
+        y: (targetCanvas.height - targetCanvas.width) / 2,
+        size: targetCanvas.width
+      };
+    }
+
+    return {
+      x: 0,
+      y: 0,
+      size: targetCanvas.height
+    };
+  }
+
   function drawAnimatedImage(frame: CanvasRenderFrame): void {
     if (!media || !canvas || !context || !imageMotion) {
       return;
@@ -128,7 +150,7 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
     const easedProgress = easeInOutQuad(progress);
     const cropX = lerp(imageMotion.from.x, imageMotion.to.x, easedProgress);
     const cropY = lerp(imageMotion.from.y, imageMotion.to.y, easedProgress);
-    const squareSize = canvas.height;
+    const destinationRect = getImageDestinationRect(canvas);
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(
@@ -137,10 +159,10 @@ export function createMediaRenderer(kind: "image" | "video"): CanvasRenderer {
       cropY,
       imageMotion.cropSize,
       imageMotion.cropSize,
-      0,
-      0,
-      squareSize,
-      squareSize
+      destinationRect.x,
+      destinationRect.y,
+      destinationRect.size,
+      destinationRect.size
     );
   }
 

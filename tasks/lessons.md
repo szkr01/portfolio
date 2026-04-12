@@ -14,3 +14,4 @@
 - ユーザーが UI 要素の有無を訂正したら、実装を足して合わせず、まずテスト期待が仕様逸脱していないか疑う。今回のような modal close 導線は、既存の backdrop / `Escape` 契約を崩さずテスト側を戻す。
 - ユーザーが「ページを消す」と「scene は残す」を切り分けたら、route/nav 用 registry と canvas scene registry を同一視しない。article 削除時は公開 UI と内部 scene を別レイヤーで扱う。
 - 公開リポジトリ向けの README、`tasks/`、smoke script、CI 補助コードには、ローカルの絶対パスやユーザー名を埋め込まない。外部参照は repo-relative な表現か設定可能な環境変数で表す。
+- モバイルで canvas 比率を変えた後の image scene は、レイアウトの縦積み確認だけで完了扱いにしない。`drawImage` の destination rect と実ブラウザの端ピクセル描画を両方確認して、未描画の空白帯が残っていないことまで固定する。
