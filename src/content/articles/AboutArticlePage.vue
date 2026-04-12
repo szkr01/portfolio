@@ -97,7 +97,7 @@ const toolsItems = [
         公開されている主な過去作品
       </ArticleText>
       <ul class="list-disc pl-6 space-y-2 theme-text color-transition leading-relaxed">
-        <li><strong><a href="./" rel="noopener noreferrer" class="theme-accent hover:underline">Icon Character</a></strong> - このページで使われている、視差効果で働くキャラクターアイコン</li>
+        <li><strong><a href="https://github.com/szkr01/portfolio/blob/main/src/components/article/ParallaxContainer.vue" rel="noopener noreferrer" class="theme-accent hover:underline">Icon Character</a></strong> - このページで使われている、視差効果で働くキャラクターアイコン</li>
         <li><strong><a href="https://szkr01.github.io/WASTE_APPS/pages/OverSub.html" target="_blank" rel="noopener noreferrer" class="theme-accent hover:underline">Sketch Book</a></strong> - 音韻を意識しながら書ける歌詞エディタ</li>
         <li><strong><a href="https://github.com/szkr01/PureILEMB" target="_blank" rel="noopener noreferrer" class="theme-accent hover:underline">Pure ILEMB</a></strong> - ローカル画像生成環境向けの画像検索システム</li>
         <li><strong><a href="https://github.com/szkr01/ShaderEditor" target="_blank" rel="noopener noreferrer" class="theme-accent hover:underline">Shader Editor</a></strong> - レイマーチングシーン内のオブジェクトを操作できるエディタ</li>
