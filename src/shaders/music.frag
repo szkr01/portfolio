@@ -1,6 +1,3 @@
-// thanks for iq
-//https://iquilezles.org/articles/warp/
-
 // Hash / noise
 const float HASH_SCALE = 0.6180339;
 const float HASH_MULT  = 25.0;

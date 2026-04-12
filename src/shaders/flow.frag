@@ -1,6 +1,3 @@
-// thanks for iq
-//https://iquilezles.org/articles/warp/
-
 const vec3 COLOR_1 = vec3(0.05098039, 0.05098039, 0.2509804);
 const vec3 COLOR_2 = vec3(0.10196079, 0.6, 0.6509804);
 const vec3 COLOR_3 = vec3(1.0, 0.902, 0.702);
