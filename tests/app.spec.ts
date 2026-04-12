@@ -170,6 +170,6 @@ describe("App", () => {
     expect(wrapper.get("main").classes()).toContain("app-shell");
     expect(wrapper.get("#left-pane").classes()).toContain("canvas-pane");
     expect(wrapper.get("#right-pane").classes()).toContain("article-pane");
-    expect(wrapper.get(".article-pane__inner").exists()).toBe(true);
+    expect(wrapper.find(".article-pane__inner").exists()).toBe(true);
   });
 });
