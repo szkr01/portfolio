@@ -144,7 +144,7 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
         </li>
         <li>
           <strong><ArticleLink href="https://github.com/szkr01/connection_logger">connection_logger</ArticleLink></strong>
-          - wininet.dllをオーバーライドし、windowsアプリケーションのTCP/UDP通信をログに取るためのプログラム。
+          - wininet.dllをオーバーライドし、windowsアプリケーションの通信をログに取るためのプログラム。
         </li>
       </ul>
     </section>
