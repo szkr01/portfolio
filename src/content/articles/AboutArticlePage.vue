@@ -12,7 +12,6 @@ import ParallaxContainer from "../../components/article/ParallaxContainer.vue";
 
 const interestedItems = [
   "Machine Learning",
-  "Searching",
   "Rendering",
   "Reverse Engineering",
   "Design",
