@@ -11,9 +11,19 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
         <span class="theme-accent color-transition">Projects</span>
       </ArticleHeading>
       <p class="theme-muted color-transition text-lg leading-relaxed mt-4">
-        思いついたものは、その都度かたちにしています。公開しているものは非常に少数で、共有可能なものの中から特に面白い、わかりやすいものをピックアップしています。すべてのコードはリンクからgithub経由で閲覧することができます。
+        思いついたものは、その都度かたちにしています。公開しているものは非常に少数で、共有可能なものの中から特に面白い、わかりやすいものをピックアップしています。コードや記事はリンク先から閲覧することができます。
       </p>
     </header>
+
+    <section class="mb-10">
+      <ArticleHeading :level="2" accent bordered>My Article</ArticleHeading>
+      <ul class="list-disc pl-6 mt-4 space-y-2 theme-text color-transition leading-relaxed">
+        <li>
+          <strong><ArticleLink href="https://zenn.dev/minecode/articles/58d48e3a812711">やばいコードを発掘した話</ArticleLink></strong>
+          - Cの関数本体を機械語として埋め込み、実行可能メモリ上で呼び出す小ネタ記事。
+        </li>
+      </ul>
+    </section>
 
     <section class="mb-10">
       <ArticleHeading :level="2" accent bordered>Image Search</ArticleHeading>
