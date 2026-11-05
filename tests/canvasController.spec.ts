@@ -125,7 +125,12 @@ describe("createCanvasController", () => {
     expect(controller.getDebugState().transition?.toRuntimeKey).toBe("ripple");
 
     expect(animationCallback).not.toBeNull();
+    vi.mocked(cloudRenderer.render).mockClear();
+    vi.mocked(altRenderer.render).mockClear();
     (animationCallback as unknown as FrameRequestCallback)(2_300);
+
+    expect(cloudRenderer.render).toHaveBeenCalledTimes(1);
+    expect(altRenderer.render).toHaveBeenCalledTimes(1);
 
     const cloudFrames = (cloudRenderer.render as ReturnType<typeof vi.fn>).mock.calls.map(
       (call) => call[0] as CanvasRenderFrame
@@ -142,7 +147,7 @@ describe("createCanvasController", () => {
 
     (animationCallback as unknown as FrameRequestCallback)(2_800);
 
-    expect(cloudRenderer.dispose).toHaveBeenCalledTimes(1);
+    expect(cloudRenderer.dispose).not.toHaveBeenCalled();
     expect(controller.getDebugState().transition).toBeNull();
     expect(controller.getDebugState().activeRuntimeKey).toBe("ripple");
   });
@@ -270,5 +275,89 @@ describe("createCanvasController", () => {
     expect(shaderRenderer.render).toHaveBeenCalled();
     expect(visibleContext.clearRect).toHaveBeenCalledTimes(1);
     expect(visibleContext.drawImage).toHaveBeenCalledTimes(1);
+  });
+
+  it("starts the full transition after loading and reuses compiled shader runtimes", async () => {
+    const first = createRenderer("shader");
+    const second = createRenderer("shader");
+    let finishLoad: () => void = () => undefined;
+    vi.mocked(second.load).mockImplementation(() => new Promise<void>((resolve) => {
+      finishLoad = resolve;
+    }));
+    const transitionRenderer = {
+      mount: vi.fn(),
+      render: vi.fn(),
+      resize: vi.fn(),
+      dispose: vi.fn(),
+      getOutput: vi.fn(() => document.createElement("canvas"))
+    };
+    let animationCallback: FrameRequestCallback | null = null;
+    const factory = vi.fn()
+      .mockImplementationOnce(() => first)
+      .mockImplementationOnce(() => second);
+    const controller = createCanvasController({
+      rendererFactory: factory,
+      transitionRenderer,
+      transitions: [{ id: "live-mix", fragmentShader: "void main() {}", durationMs: 800 }],
+      defaultTransitionId: "live-mix",
+      requestFrame: vi.fn((callback: FrameRequestCallback) => {
+        animationCallback = callback;
+        return 1;
+      }),
+      cancelFrame: vi.fn()
+    });
+
+    controller.bind(document.createElement("canvas"));
+    controller.registerScenes([
+      { id: "About", runtimeKey: "cloud", kind: "shader", source: { fragmentShader: "a" } },
+      { id: "music", runtimeKey: "music", kind: "shader", source: { fragmentShader: "b" } }
+    ]);
+    await controller.activate("About", "init");
+    controller.preload();
+    expect(second.load).toHaveBeenCalledTimes(1);
+    vi.mocked(performance.now).mockReturnValue(2_000);
+    const pending = controller.activate("music", "manual");
+    expect(second.load).toHaveBeenCalledTimes(1);
+    vi.mocked(performance.now).mockReturnValue(5_000);
+    finishLoad();
+    await pending;
+
+    expect(controller.getDebugState().transition?.progress).toBe(0);
+    (animationCallback as unknown as FrameRequestCallback)(5_800);
+    expect(first.dispose).not.toHaveBeenCalled();
+    vi.mocked(performance.now).mockReturnValue(6_000);
+    await controller.activate("About", "manual");
+    expect(factory).toHaveBeenCalledTimes(2);
+    expect(first.load).toHaveBeenCalledTimes(1);
+    controller.dispose();
+    expect(first.dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores a late shader load after a newer page selection", async () => {
+    const first = createRenderer("shader");
+    const second = createRenderer("shader");
+    let finishLoad: () => void = () => undefined;
+    vi.mocked(second.load).mockImplementation(() => new Promise<void>((resolve) => {
+      finishLoad = resolve;
+    }));
+    const controller = createCanvasController({
+      rendererFactory: vi.fn().mockImplementationOnce(() => first).mockImplementationOnce(() => second),
+      transitionRenderer: {
+        mount: vi.fn(), render: vi.fn(), resize: vi.fn(), dispose: vi.fn(), getOutput: vi.fn(() => null)
+      },
+      requestFrame: vi.fn(() => 1), cancelFrame: vi.fn()
+    });
+    controller.bind(document.createElement("canvas"));
+    controller.registerScenes([
+      { id: "About", runtimeKey: "cloud", kind: "shader", source: { fragmentShader: "a" } },
+      { id: "music", runtimeKey: "music", kind: "shader", source: { fragmentShader: "b" } }
+    ]);
+    await controller.activate("About", "init");
+    const oldRequest = controller.activate("music", "manual");
+    await controller.activate("About", "manual");
+    finishLoad();
+    await oldRequest;
+    expect(controller.getDebugState().activeSceneId).toBe("About");
+    controller.dispose();
   });
 });

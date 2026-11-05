@@ -50,6 +50,8 @@ function toThemeTokens(theme: ThemeState): ThemeTokens {
 export function createThemeSampler(size = 96): {
   sample(source: CanvasImageSource): ThemeTokens | null;
   setThemeMode(mode: CanvasThemeMode | null): void;
+  beginTransition(source: CanvasImageSource, mode: CanvasThemeMode | null): void;
+  transition(progress: number): ThemeTokens;
   step(): ThemeTokens;
   current(): ThemeTokens;
 } {
@@ -59,12 +61,15 @@ export function createThemeSampler(size = 96): {
   const context = analysisCanvas.getContext("2d", { willReadFrequently: true });
   let currentTheme = cloneThemeState(defaultThemeOklab);
   let targetTheme = cloneThemeState(defaultThemeOklab);
+  let transitionFrom: ThemeState | null = null;
   let themeMode: CanvasThemeMode | null = null;
 
   if (!context) {
     return {
       sample: () => null,
       setThemeMode: () => undefined,
+      beginTransition: () => undefined,
+      transition: () => toThemeTokens(currentTheme),
       step: () => toThemeTokens(currentTheme),
       current: () => toThemeTokens(currentTheme)
     };
@@ -73,6 +78,33 @@ export function createThemeSampler(size = 96): {
   return {
     setThemeMode(mode) {
       themeMode = mode;
+    },
+    beginTransition(source, mode) {
+      const from = cloneThemeState(currentTheme);
+      themeMode = mode;
+      this.sample(source);
+      transitionFrom = from;
+      currentTheme = cloneThemeState(from);
+    },
+    transition(progress) {
+      if (!transitionFrom) {
+        return toThemeTokens(currentTheme);
+      }
+      const t = Math.max(0, Math.min(1, progress));
+      const eased = t * t * (3 - 2 * t);
+      for (const key of Object.keys(currentTheme) as Array<keyof ThemeState>) {
+        const from = transitionFrom[key];
+        const to = targetTheme[key];
+        currentTheme[key] = {
+          L: lerp(from.L, to.L, eased),
+          a: lerp(from.a, to.a, eased),
+          b: lerp(from.b, to.b, eased)
+        };
+      }
+      if (t === 1) {
+        transitionFrom = null;
+      }
+      return toThemeTokens(currentTheme);
     },
     sample(source) {
       context.clearRect(0, 0, size, size);

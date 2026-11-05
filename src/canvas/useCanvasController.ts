@@ -21,6 +21,7 @@ export function useCanvasController(): {
   setCanvas: (element: HTMLCanvasElement | null) => void;
   themeStyle: ComputedRef<Record<string, string>>;
   activate: (sceneId: string, source: "init" | "scroll" | "manual") => Promise<void>;
+  preload: () => void;
 } {
   const canvasRef = ref<HTMLCanvasElement | null>(null);
   const theme = ref<ThemeTokens>(defaultTheme);
@@ -85,6 +86,9 @@ export function useCanvasController(): {
     })),
     activate(sceneId, source) {
       return controller.activate(sceneId, source);
+    },
+    preload() {
+      controller.preload();
     }
   };
 }

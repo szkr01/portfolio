@@ -70,4 +70,33 @@ describe("createThemeSampler", () => {
       brightness(lightSampler.current().text)
     );
   });
+
+  it("interpolates the theme by transition progress instead of frame count", () => {
+    const fakeContext = {
+      clearRect: vi.fn(),
+      drawImage: vi.fn(),
+      getImageData: vi.fn(() => ({ data: createImageData(96, [200, 230, 255]) }))
+    };
+    const createElement = document.createElement.bind(document);
+    vi.spyOn(document, "createElement").mockImplementation(((tag: string) =>
+      tag === "canvas"
+        ? ({ width: 0, height: 0, getContext: () => fakeContext } as unknown as HTMLCanvasElement)
+        : createElement(tag)
+    ) as typeof document.createElement);
+
+    const sampler = createThemeSampler();
+    sampler.setThemeMode("light");
+    for (let i = 0; i < 80; i += 1) sampler.sample({} as CanvasImageSource);
+    const start = sampler.current();
+    sampler.beginTransition({} as CanvasImageSource, "dark");
+    expect(sampler.transition(0).bg).toBe(start.bg);
+    const mid = sampler.transition(0.5);
+    expect(sampler.transition(0.5)).toEqual(mid);
+    const end = sampler.transition(1);
+
+    expect(brightness(mid.bg)).toBeLessThan(brightness(start.bg));
+    expect(brightness(mid.bg)).toBeGreaterThan(brightness(end.bg));
+    expect(brightness(mid.text)).toBeGreaterThan(brightness(start.text));
+    expect(brightness(mid.text)).toBeLessThan(brightness(end.text));
+  });
 });

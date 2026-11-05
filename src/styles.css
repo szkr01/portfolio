@@ -92,13 +92,6 @@ body {
   border-color: var(--border);
 }
 
-.color-transition {
-  transition:
-    background-color 0.1s ease,
-    color 0.1s ease,
-    border-color 0.1s ease;
-}
-
 .canvas-container {
   cursor: grab;
 }
