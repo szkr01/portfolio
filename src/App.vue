@@ -60,7 +60,7 @@ watch(
 
 <template>
   <main
-    class="app-shell color-transition font-sans antialiased"
+    class="app-shell theme-text font-sans antialiased"
     :style="themeStyle"
   >
     <CanvasPane :set-canvas="setCanvas" :pane-style="canvasPaneStyle" />

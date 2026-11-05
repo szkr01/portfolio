@@ -204,19 +204,17 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
           1,
           Math.max(0, (now - transitionState.startedAtMs) / transitionState.definition.durationMs)
         );
+        emitTheme(themeSampler.transition(progress));
         if (progress >= 1) {
           if (runtimeInstances.get(transitionState.fromRuntimeKey)?.scene.kind !== "shader") {
             disposeRuntime(transitionState.fromRuntimeKey);
           }
           transitionState = null;
         }
-      }
-      if (now - lastSampleTime >= sampleIntervalMs) {
-        if (canvas) {
-          const nextTheme = themeSampler.sample(canvas);
-          if (nextTheme) {
-            emitTheme(nextTheme);
-          }
+      } else if (now - lastSampleTime >= sampleIntervalMs) {
+        const nextTheme = themeSampler.sample(canvas);
+        if (nextTheme) {
+          emitTheme(nextTheme);
         }
         lastSampleTime = now;
       } else {
@@ -325,11 +323,15 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
         drawToVisible(nextRuntime.renderer.captureFrame() ?? nextRuntime.canvas);
         return;
       }
+      themeSampler.beginTransition(
+        nextRuntime.renderer.captureFrame() ?? nextRuntime.canvas,
+        nextScene.themeMode ?? null
+      );
       transitionState = {
         definition: transition,
         fromRuntimeKey: activeRuntimeKey,
         toRuntimeKey: nextScene.runtimeKey,
-        startedAtMs: currentGlobalTimeMs
+        startedAtMs: performance.now()
       };
       activeRuntimeKey = nextScene.runtimeKey;
     },
