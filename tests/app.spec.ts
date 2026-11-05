@@ -12,7 +12,8 @@ vi.mock("../src/canvas/useCanvasController", () => ({
     canvasRef: { value: null },
     setCanvas: vi.fn(),
     themeStyle: { value: {} },
-    activate
+    activate,
+    preload: vi.fn()
   })
 }));
 

@@ -7,7 +7,7 @@ import CanvasPane from "./components/CanvasPane.vue";
 import { useCanvasController } from "./canvas/useCanvasController";
 import type { ArticlePageEntry } from "./content/articlePages";
 
-const { setCanvas, themeStyle, activate } = useCanvasController();
+const { setCanvas, themeStyle, activate, preload } = useCanvasController();
 const route = useRoute();
 const currentArticle = computed(() => route.meta.article as ArticlePageEntry | undefined);
 const activePaneRatio = computed(() => currentArticle.value?.paneRatio ?? { canvas: 1, article: 1 });
@@ -32,6 +32,7 @@ onMounted(async () => {
 
   await activate(currentArticle.value.sceneId, "init");
   hasActivatedInitialScene = true;
+  preload();
 });
 
 watch(
@@ -44,6 +45,7 @@ watch(
     if (!hasActivatedInitialScene) {
       await activate(nextSceneId, "init");
       hasActivatedInitialScene = true;
+      preload();
       return;
     }
 

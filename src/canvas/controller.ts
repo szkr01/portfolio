@@ -24,6 +24,7 @@ interface CanvasControllerOptions {
 interface CanvasController {
   bind(canvas: HTMLCanvasElement): void;
   registerScenes(scenes: CanvasSceneDefinition[]): void;
+  preload(): void;
   activate(sceneId: string, source: CanvasActivationSource): Promise<void>;
   subscribeTheme(listener: (theme: ThemeTokens) => void): () => void;
   resize(): void;
@@ -55,6 +56,7 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
     renderer: CanvasRenderer;
     canvas: HTMLCanvasElement;
     loaded: boolean;
+    loadPromise: Promise<void> | null;
     frame: CanvasRenderFrame;
   }
 
@@ -67,6 +69,7 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
 
   const runtimeInstances = new Map<string, RuntimeInstance>();
   let transitionState: TransitionState | null = null;
+  let latestActivationId = 0;
 
   function emitTheme(theme: ThemeTokens): void {
     for (const listener of themeListeners) {
@@ -142,6 +145,7 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
       renderer,
       canvas: runtimeCanvas,
       loaded: false,
+      loadPromise: null,
       frame: {
         globalTimeMs: currentGlobalTimeMs,
         pageTimeMs: Math.max(0, currentGlobalTimeMs - pageStartedAtMs),
@@ -157,8 +161,10 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
     const runtime = getOrCreateRuntime(scene);
     runtime.scene = scene;
     if (!runtime.loaded) {
-      await runtime.renderer.load(scene);
-      runtime.loaded = true;
+      runtime.loadPromise ??= runtime.renderer.load(scene).then(() => {
+        runtime.loaded = true;
+      });
+      await runtime.loadPromise;
     }
     return runtime;
   }
@@ -199,7 +205,9 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
           Math.max(0, (now - transitionState.startedAtMs) / transitionState.definition.durationMs)
         );
         if (progress >= 1) {
-          disposeRuntime(transitionState.fromRuntimeKey);
+          if (runtimeInstances.get(transitionState.fromRuntimeKey)?.scene.kind !== "shader") {
+            disposeRuntime(transitionState.fromRuntimeKey);
+          }
           transitionState = null;
         }
       }
@@ -259,18 +267,26 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
         scenes.set(scene.id, scene);
       }
     },
+    preload() {
+      for (const scene of scenes.values()) {
+        if (scene.kind === "shader" && scene.runtimeKey !== activeRuntimeKey) {
+          void ensureRuntimeLoaded(scene).catch(console.error);
+        }
+      }
+    },
     async activate(sceneId, _source) {
+      const activationId = ++latestActivationId;
       currentGlobalTimeMs = performance.now();
       const nextScene = scenes.get(sceneId);
       if (!nextScene || !canvas) {
         return;
       }
-      themeSampler.setThemeMode(nextScene.themeMode ?? null);
       const previousScene = currentScene;
       if (previousScene?.id === nextScene.id) {
         return;
       }
       if (activeRuntimeKey === nextScene.runtimeKey) {
+        themeSampler.setThemeMode(nextScene.themeMode ?? null);
         currentScene = nextScene;
         const runtime = runtimeInstances.get(nextScene.runtimeKey);
         if (runtime) {
@@ -281,6 +297,11 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
         return;
       }
       const nextRuntime = await ensureRuntimeLoaded(nextScene);
+      if (activationId !== latestActivationId) {
+        return;
+      }
+      currentGlobalTimeMs = performance.now();
+      themeSampler.setThemeMode(nextScene.themeMode ?? null);
       nextRuntime.renderer.resize(canvas.width, canvas.height);
       nextRuntime.renderer.render({
         globalTimeMs: currentGlobalTimeMs,
@@ -297,7 +318,9 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
       const transition = getTransitionDefinition(nextScene);
       currentScene = nextScene;
       if (!transition) {
-        disposeRuntime(activeRuntimeKey);
+        if (runtimeInstances.get(activeRuntimeKey)?.scene.kind !== "shader") {
+          disposeRuntime(activeRuntimeKey);
+        }
         activeRuntimeKey = nextScene.runtimeKey;
         drawToVisible(nextRuntime.renderer.captureFrame() ?? nextRuntime.canvas);
         return;

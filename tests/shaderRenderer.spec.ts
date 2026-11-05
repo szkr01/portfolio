@@ -34,6 +34,7 @@ function createMockWebGL2Context(): MockWebGL2Context {
     attachShader: vi.fn(),
     linkProgram: vi.fn(),
     getProgramParameter: vi.fn(() => true),
+    getExtension: vi.fn(() => null),
     getProgramInfoLog: vi.fn(() => ""),
     deleteProgram: vi.fn(),
     createBuffer: vi.fn(() => buffer),
@@ -87,5 +88,33 @@ describe("createShaderRenderer", () => {
     expect(fragmentSource).toContain("mainImage(color, gl_FragCoord.xy);");
     expect(fragmentSource).toContain("outColor = color;");
     expect(fragmentSource).not.toContain("gl_FragColor");
+  });
+
+  it("waits for parallel shader compilation before checking link status", async () => {
+    const gl = createMockWebGL2Context();
+    const completionStatus = 0x91b1;
+    let completed = false;
+    vi.mocked(gl.getExtension!).mockReturnValue({
+      COMPLETION_STATUS_KHR: completionStatus
+    } as KHR_parallel_shader_compile);
+    vi.mocked(gl.getProgramParameter!).mockImplementation((_program, param) =>
+      param === completionStatus ? completed : true
+    );
+
+    const renderer = createShaderRenderer();
+    const canvas = document.createElement("canvas");
+    canvas.getContext = vi.fn(() => gl as WebGL2RenderingContext) as unknown as HTMLCanvasElement["getContext"];
+    renderer.mount(canvas);
+    const loading = renderer.load({
+      id: "music",
+      runtimeKey: "music",
+      kind: "shader",
+      source: { fragmentShader: "void mainImage(out vec4 c, in vec2 p) { c = vec4(1.0); }" }
+    });
+
+    expect(gl.getProgramParameter).not.toHaveBeenCalledWith(expect.anything(), gl.LINK_STATUS);
+    completed = true;
+    await loading;
+    expect(gl.getProgramParameter).toHaveBeenCalledWith(expect.anything(), gl.LINK_STATUS);
   });
 });
