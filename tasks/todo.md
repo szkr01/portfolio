@@ -4,7 +4,7 @@
 - [x] Audio / DSPカテゴリを作りSpacifyを追加。
 - [x] `CHANGELOG.md` に履歴を記録。
 - [x] `npm test` と `npm run build` で検証。
-- [ ] PRを作成しmainへマージ、デプロイを確認。
+- [x] PR #2をmainへマージし、Deploy Pagesの成功を確認。
 
 ## Current TDD Log
 - 既存の文面・リンクを追加するコンテンツ変更のみ。controllerと既存コンポーネントの挙動は変更せず、既存テストとビルドで検証する。
