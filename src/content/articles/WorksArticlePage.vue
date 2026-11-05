@@ -22,6 +22,10 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
           <strong><ArticleLink href="https://zenn.dev/minecode/articles/58d48e3a812711">やばいコードを発掘した話</ArticleLink></strong>
           - Cの関数本体を機械語として埋め込み、実行可能メモリ上で呼び出す小ネタ記事。
         </li>
+        <li>
+          <strong><ArticleLink href="https://zenn.dev/minecode/articles/b4b9f7babcd56d">おい！あなたのGPU演算能力制限されてますよ👽</ArticleLink></strong>
+          - GeForceの演算性能制限とgpu-unlockの仕組みを調査。RTX 5060 Tiでの演算性能測定と、画像生成モデルのINT8量子化による推論高速化を紹介。
+        </li>
       </ul>
     </section>
 
@@ -88,6 +92,16 @@ import ArticleLink from "../../components/article/ArticleLink.vue";
           <strong><ArticleLink href="https://github.com/szkr01/DOPE_ABLETON_MOD">DOPE ABLETON MOD</ArticleLink></strong>
           <br/>
           Ableton Liveのレンダラーにフックし、シェーダーによる動的な視覚エフェクトを加えるMod。
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-10">
+      <ArticleHeading :level="2" accent bordered>Audio / DSP</ArticleHeading>
+      <ul class="list-disc pl-6 mt-4 space-y-2 theme-text color-transition leading-relaxed">
+        <li>
+          <strong><ArticleLink href="https://github.com/szkr01/Spacify">Spacify</ArticleLink></strong>
+          - 1オクターブ上にピッチシフトしたファズとリバーブの残響を、原音に加算するVST3エフェクト。C++ / JUCEで実装。
         </li>
       </ul>
     </section>
