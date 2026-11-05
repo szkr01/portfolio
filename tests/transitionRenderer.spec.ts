@@ -63,6 +63,8 @@ function createMockWebGL2Context(): MockWebGL2Context {
     texParameteri: vi.fn(),
     pixelStorei: vi.fn(),
     texImage2D: vi.fn(),
+    texSubImage2D: vi.fn(),
+    deleteTexture: vi.fn(),
     uniform1i: vi.fn(),
     uniform1f: vi.fn(),
     uniform2f: vi.fn(),
@@ -110,5 +112,40 @@ describe("createTransitionRenderer", () => {
     expect(fragmentSource).toContain("in vec2 v_uv;");
     expect(fragmentSource).not.toContain("texture2D");
     expect(fragmentSource).not.toContain("gl_FragColor");
+  });
+
+  it("reuses two textures across frames, reallocates only on resize, and releases them", () => {
+    const gl = createMockWebGL2Context();
+    const renderer = createTransitionRenderer();
+    const canvas = document.createElement("canvas");
+    canvas.width = 640;
+    canvas.height = 360;
+    canvas.getContext = vi.fn(() => gl as WebGL2RenderingContext) as unknown as HTMLCanvasElement["getContext"];
+
+    const frame = {
+      width: 640,
+      height: 360,
+      progress: 0.5,
+      from: document.createElement("canvas"),
+      to: document.createElement("canvas")
+    };
+
+    renderer.mount(canvas);
+    renderer.render(canvasTransitions[0], frame);
+    renderer.render(canvasTransitions[0], frame);
+
+    expect(gl.createTexture).toHaveBeenCalledTimes(2);
+    expect(gl.texImage2D).toHaveBeenCalledTimes(2);
+    expect(gl.texSubImage2D).toHaveBeenCalledTimes(2);
+
+    canvas.width = 800;
+    canvas.height = 450;
+    renderer.render(canvasTransitions[0], { ...frame, width: 800, height: 450 });
+
+    expect(gl.createTexture).toHaveBeenCalledTimes(2);
+    expect(gl.texImage2D).toHaveBeenCalledTimes(4);
+
+    renderer.dispose();
+    expect(gl.deleteTexture).toHaveBeenCalledTimes(2);
   });
 });

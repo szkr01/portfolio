@@ -125,7 +125,12 @@ describe("createCanvasController", () => {
     expect(controller.getDebugState().transition?.toRuntimeKey).toBe("ripple");
 
     expect(animationCallback).not.toBeNull();
+    vi.mocked(cloudRenderer.render).mockClear();
+    vi.mocked(altRenderer.render).mockClear();
     (animationCallback as unknown as FrameRequestCallback)(2_300);
+
+    expect(cloudRenderer.render).toHaveBeenCalledTimes(1);
+    expect(altRenderer.render).toHaveBeenCalledTimes(1);
 
     const cloudFrames = (cloudRenderer.render as ReturnType<typeof vi.fn>).mock.calls.map(
       (call) => call[0] as CanvasRenderFrame

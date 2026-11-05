@@ -93,8 +93,11 @@ function createProgram(gl: WebGL2RenderingContext, fragmentShader: string): Tran
   };
 }
 
-function createTexture(gl: WebGL2RenderingContext, unit: number, source: CanvasImageSource): void {
+function createTexture(gl: WebGL2RenderingContext, unit: number): WebGLTexture {
   const texture = gl.createTexture();
+  if (!texture) {
+    throw new Error("Failed to create transition texture");
+  }
   gl.activeTexture(gl.TEXTURE0 + unit);
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -102,13 +105,16 @@ function createTexture(gl: WebGL2RenderingContext, unit: number, source: CanvasI
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source as TexImageSource);
+  return texture;
 }
 
 export function createTransitionRenderer(): CanvasTransitionRenderer {
   let canvas: HTMLCanvasElement | null = null;
   let currentProgramId: string | null = null;
   let programState: TransitionProgramState | null = null;
+  let textures: [WebGLTexture, WebGLTexture] | null = null;
+  let textureWidth = 0;
+  let textureHeight = 0;
 
   return {
     mount(nextCanvas) {
@@ -133,8 +139,22 @@ export function createTransitionRenderer(): CanvasTransitionRenderer {
       const { program, resolutionUniform, progressUniform, fromUniform, toUniform } = programState;
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.useProgram(program);
-      createTexture(gl, 0, frame.from);
-      createTexture(gl, 1, frame.to);
+      if (!textures) {
+        textures = [createTexture(gl, 0), createTexture(gl, 1)];
+      }
+      const allocate = textureWidth !== frame.width || textureHeight !== frame.height;
+      for (let unit = 0; unit < 2; unit += 1) {
+        gl.activeTexture(gl.TEXTURE0 + unit);
+        gl.bindTexture(gl.TEXTURE_2D, textures[unit]);
+        const source = unit === 0 ? frame.from : frame.to;
+        if (allocate) {
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source as TexImageSource);
+        } else {
+          gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, source as TexImageSource);
+        }
+      }
+      textureWidth = frame.width;
+      textureHeight = frame.height;
       gl.uniform1i(fromUniform, 0);
       gl.uniform1i(toUniform, 1);
       gl.uniform1f(progressUniform, frame.progress);
@@ -144,8 +164,14 @@ export function createTransitionRenderer(): CanvasTransitionRenderer {
     resize() {},
     dispose() {
       if (programState) {
+        for (const texture of textures ?? []) {
+          programState.gl.deleteTexture(texture);
+        }
         programState.gl.deleteProgram(programState.program);
       }
+      textures = null;
+      textureWidth = 0;
+      textureHeight = 0;
       programState = null;
       currentProgramId = null;
     },

@@ -94,10 +94,6 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
       return;
     }
     const activeRuntime = runtimeInstances.get(activeRuntimeKey) ?? null;
-    if (activeRuntime) {
-      updateRuntimeFrame(activeRuntime, now);
-      activeRuntime.renderer.render(activeRuntime.frame);
-    }
     if (transitionState) {
       const fromRuntime = runtimeInstances.get(transitionState.fromRuntimeKey) ?? null;
       const toRuntime = runtimeInstances.get(transitionState.toRuntimeKey) ?? null;
@@ -122,6 +118,8 @@ export function createCanvasController(options: CanvasControllerOptions): Canvas
       return;
     }
     if (activeRuntime) {
+      updateRuntimeFrame(activeRuntime, now);
+      activeRuntime.renderer.render(activeRuntime.frame);
       drawToVisible(activeRuntime.renderer.captureFrame() ?? activeRuntime.canvas);
     }
   }

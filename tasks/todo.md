@@ -1,15 +1,17 @@
 ## Current Plan
-- [x] Issue #1: Worksにgpu-unlock記事とSpacifyを追加する仕様を整理。
-- [x] `WorksArticlePage.vue` のMy Articleに技術記事を追加。
-- [x] Audio / DSPカテゴリを作りSpacifyを追加。
-- [x] `CHANGELOG.md` に履歴を記録。
-- [x] `npm test` と `npm run build` で検証。
-- [x] PR #2をmainへマージし、Deploy Pagesの成功を確認。
+- [x] Issue #3: ページ遷移時のWebGLリソース生成と重複描画を削減。
+- [x] 既存動作を再現する回帰テストを追加（Red）。
+- [x] WebGLテクスチャを2個に固定し、サイズ変更時のみ再確保（Green）。
+- [x] トランジション中の遷移先シーン重複描画を削除（Green）。
+- [x] `npm test`、`npm run build`、`git diff --check` を確認。
+- [x] `http://127.0.0.1:5173/portfolio/` で開発サーバーを起動し、HTTP 200を確認。
+- [ ] ユーザーの画面確認後、PR・マージを判断する。
 
 ## Current TDD Log
-- 既存の文面・リンクを追加するコンテンツ変更のみ。controllerと既存コンポーネントの挙動は変更せず、既存テストとビルドで検証する。
+- Red: テクスチャが2フレームで4個生成され、遷移先シーンが1フレームで2回描画されることを確認。
+- Green: テクスチャの再利用と遷移中の描画1回化を検証。
 
 ## Current Review
-- `npm test`: 18ファイル・39件成功。
-- `npm run build`: vue-tscとVite本番ビルド成功。
-- 既存Worksの表示構造を流用し、変更は記事と新カテゴリの追加のみ。
+- `npm test`: 18ファイル・40件成功。
+- `npm run build`: vue-tscとViteビルド成功。
+- 既存の800msトランジションとシェーダーを変更せず、表示確認用devサーバーを稼働中。
